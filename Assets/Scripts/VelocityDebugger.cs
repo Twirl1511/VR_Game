@@ -26,6 +26,9 @@ public class VelocityDebugger : MonoBehaviour
     {
         float velocity = _rigidbody.velocity.magnitude;
 
-        return Color.Lerp(Color.green, Color.red, velocity / maxVelocity);
+        if (velocity >= maxVelocity)
+            return Color.red;
+        else
+            return Color.green;
     }
 }

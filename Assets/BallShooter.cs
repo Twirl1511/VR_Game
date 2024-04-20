@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class BallShooter : MonoBehaviour
 {
@@ -32,7 +31,7 @@ public class BallShooter : MonoBehaviour
             Random.Range(0, 361));
 
         GameObject ball = Instantiate(_ball, _shootPosition.transform.position, Quaternion.identity, null);
-        ball.GetComponent<Rigidbody>().velocity = _shootPosition.forward * 20f;
+        ball.GetComponent<Rigidbody>().velocity = _shootPosition.forward * 10f;
         Destroy(ball, 10);
     }
 
