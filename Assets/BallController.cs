@@ -42,16 +42,13 @@ public class BallController : MonoBehaviour
         if (_isPressed)
         {
             StartCoroutine(Shoot());
-
-            //_ball.position = _defaultPositionTransform.position;
-            //_rigidbody.velocity = Vector3.zero;
         }
     }
 
     private IEnumerator Shoot()
     {
         _isReady = false;
-        _ballShooter.Shoot();
+        _ballShooter.ShootStatic();
         yield return new WaitForSeconds(1f);
         _isReady = true;
     }

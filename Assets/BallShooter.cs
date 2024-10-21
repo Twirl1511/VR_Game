@@ -20,7 +20,7 @@ public class BallShooter : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(ShootForever());
+        //StartCoroutine(ShootForever());
     }
 
     public void Shoot()
@@ -30,6 +30,13 @@ public class BallShooter : MonoBehaviour
             0,
             Random.Range(0, 361));
 
+        GameObject ball = Instantiate(_ball, _shootPosition.transform.position, Quaternion.identity, null);
+        ball.GetComponent<Rigidbody>().velocity = _shootPosition.forward * 10f;
+        Destroy(ball, 10);
+    }
+
+    public void ShootStatic()
+    {
         GameObject ball = Instantiate(_ball, _shootPosition.transform.position, Quaternion.identity, null);
         ball.GetComponent<Rigidbody>().velocity = _shootPosition.forward * 10f;
         Destroy(ball, 10);
