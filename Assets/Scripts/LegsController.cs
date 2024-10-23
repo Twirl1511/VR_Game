@@ -32,7 +32,7 @@ public class LegsController : MonoBehaviour
         UpdateLegPositions();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         UpdateDirectionForFutereSteps();
     }
@@ -48,21 +48,21 @@ public class LegsController : MonoBehaviour
                 if (Vector3.Distance(_legs[i].currentPosition.position, _legs[i].predictPosition.position) > _distance)
                 {
                     _isLegMoving = true;
-                    //StopAllLegsExcept(i);
                     _legs[i].SetNewPosition(_legs[i].predictPosition.position);
 
                     _legs[i].SetSpeed(GetSpeed(_legs[i].Time));
                     _legs[i].SetTime(0);
                 }
             }
-            
-            _legs[i].currentPosition.position = Vector3.Lerp(
+
+            if (_legs[i].CanMove)
+            {
+                _legs[i].currentPosition.position = Vector3.Lerp(
                 _legs[i].currentPosition.position,
                 _legs[i].NewPosition,
                 Time.deltaTime * _legs[i].Speed);
 
-            if (_legs[i].CanMove)
-            {
+
                 if (Vector3.Distance(_legs[i].currentPosition.position, _legs[i].NewPosition) <= 0.1f)
                 {
                     StopAllLegsExcept(i + 1);
@@ -70,29 +70,6 @@ public class LegsController : MonoBehaviour
                 }
             }
         }
-
-        //foreach (var leg in _legs)
-        //{
-        //    leg.SetTime(Mathf.Clamp(leg.Time + Time.deltaTime, _startTime, _endTime));
-
-        //    if (Vector3.Distance(leg.currentPosition.position, leg.predictPosition.position) > _distance)
-        //    {
-        //        if (!leg.CanMove)
-        //            continue;
-
-        //        StopAllLegs();
-
-        //        leg.SetNewPosition(leg.predictPosition.position);
-
-        //        leg.SetSpeed(GetSpeed(leg.Time));
-        //        leg.SetTime(0);
-        //    }
-
-        //    leg.currentPosition.position = Vector3.Lerp(
-        //        leg.currentPosition.position,
-        //        leg.NewPosition,
-        //        Time.deltaTime * leg.Speed);
-        //}
     }
 
     private void StopAllLegsExcept(int nextLegIndex)
