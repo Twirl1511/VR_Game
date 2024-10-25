@@ -806,8 +806,7 @@ Transform:
   m_LocalPosition: {x: -0.04838075, y: 0.00063600874, z: -0.00066209637}
   m_LocalScale: {x: 0.9999999, y: 0.9999999, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7280843009040788488}
+  m_Children: []
   m_Father: {fileID: 7022908512000635206}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &795345225955261873
@@ -1269,7 +1268,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1948485938248994485}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae7a353ba07fb034398575dcc1bee177, type: 3}
   m_Name: 
@@ -3079,6 +3078,37 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!1 &3525161299918648389
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8995866071506031764}
+  m_Layer: 0
+  m_Name: Head_pole
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8995866071506031764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3525161299918648389}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0371, y: -0.0276, z: -0.0156}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7022908512000635206}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3629136473875215253
 GameObject:
   m_ObjectHideFlags: 0
@@ -3377,6 +3407,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7503265951180254837}
+  - component: {fileID: 3510484404383676473}
   m_Layer: 0
   m_Name: Bone.024_end
   m_TagString: Untagged
@@ -3399,6 +3430,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8403836250883024276}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3510484404383676473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3723224303799568381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChainLength: 5
+  Target: {fileID: 7280843009040788488}
+  Pole: {fileID: 8995866071506031764}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 1
 --- !u!1 &3746627903216005569
 GameObject:
   m_ObjectHideFlags: 0
@@ -3665,7 +3714,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8403836250883024276}
   m_Layer: 0
-  m_Name: Bone.024
+  m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7121,7 +7170,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7280843009040788488}
   m_Layer: 0
-  m_Name: Bone.025_end
+  m_Name: Head_target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7135,12 +7184,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7325618456961709642}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.007294673, z: 0}
+  m_LocalRotation: {x: 0.50689495, y: -0.49300894, z: 0.49300987, w: 0.50689346}
+  m_LocalPosition: {x: -0.055672612, y: 0.00063599175, z: -0.00045954584}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7016447827680493410}
+  m_Father: {fileID: 7022908512000635206}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7465369870374603537
 GameObject:
@@ -7867,6 +7916,7 @@ Transform:
   - {fileID: 2773135991204521584}
   - {fileID: 1492234369934819916}
   - {fileID: 3733874364673596583}
+  - {fileID: 8995866071506031764}
   - {fileID: 7016447827680493410}
   - {fileID: 4605488990604276559}
   - {fileID: 7850092191316369260}
@@ -7876,6 +7926,7 @@ Transform:
   - {fileID: 3834089637376774014}
   - {fileID: 6033000799354105172}
   - {fileID: 8508082877254297062}
+  - {fileID: 7280843009040788488}
   - {fileID: 150454882613948923}
   - {fileID: 7715569192118973309}
   - {fileID: 101998477826653528}
