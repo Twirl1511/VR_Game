@@ -29,13 +29,13 @@ public class MoveObjectWithMouse : MonoBehaviour
             //directionToTarget.y = 0; // Игнорируем изменение по Y для движения в горизонтальной плоскости
 
 
-            if(Vector3.Distance(transform.position, target.position) > stopDistance)
-            {
-                // Перемещаем объект к цели
-                _rigidbody.AddForce(directionToTarget.normalized * moveSpeed);
-                //transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
-            }
-
+            //if(Vector3.Distance(transform.position, target.position) > stopDistance)
+            //{
+            //    // Перемещаем объект к цели
+            //    _rigidbody.AddForce(directionToTarget.normalized * moveSpeed);
+            //    //transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
+            //}
+            
 
             // Если направление не равно нулю
             if (directionToTarget != Vector3.zero)
