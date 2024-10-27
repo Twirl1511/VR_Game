@@ -9,6 +9,9 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs;
 public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 {
     [SerializeField]
+    private GravityController _gravityController;
+
+    [SerializeField]
     [Tooltip("Controls when gravity begins to take effect.")]
     private GravityApplicationMode _gravityApplicationModeOverrided;
 
@@ -147,7 +150,7 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
             else
             {
                 /// тут ка краз заменить на кастомную гравитацию
-                _gravityDirection += Physics.gravity * Time.deltaTime;
+                _gravityDirection += _gravityController.GravityDirection * Time.deltaTime;
             }
 
             motion += _gravityDirection * Time.deltaTime;
