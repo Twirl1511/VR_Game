@@ -10,6 +10,7 @@ public class GravityController : MonoBehaviour
     [SerializeField] private float _gravityForce = 9.81f;
     [SerializeField] private Transform _model;
     public LayerMask groundLayer;
+    [SerializeField] private AnimationCurve _animationCurve;
     public Vector3 direction;
 
     public Vector3 GravityDirection { get; private set; }
@@ -94,5 +95,20 @@ public class GravityController : MonoBehaviour
         Gizmos.color = Color.red;
         for (int i = 0; i < _arcPoints.Count - 1; i += 2)
             Gizmos.DrawLine(_arcPoints[i], _arcPoints[i + 1]);
+    }
+
+    private void SurfaceAlignment()
+    {
+        Ray ray = new Ray(_model.position, -_model.up);
+        RaycastHit hitInfo = new RaycastHit();
+        Quaternion RotationRef = Quaternion.Euler(0, 0, 0);
+
+        if (Physics.Raycast(ray, out hitInfo, groundLayer))
+        {
+            GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
+
+            RotationRef = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(Vector3.up, hitInfo.normal), _animationCurve.Evaluate(Time.time) * speed);
+            transform.rotation = Quaternion.Euler(RotationRef.eulerAngles.x, transform.eulerAngles.y, RotationRef.eulerAngles.z);
+        }
     }
 }
