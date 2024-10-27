@@ -26,6 +26,8 @@ public class GravityController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        SurfaceAlignment();
+        return;
         // Радиус дуги зависит от скорости и deltaTime
         float arcRadius = speed * Time.deltaTime;
 
