@@ -42,10 +42,15 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
         set => SetInputActionProperty(ref m_RightHandMoveAction, value);
     }
 
+    public Vector2 Input { get; private set; }
+    public Vector2 TransInWorldSpace { get; private set; }
+
     private CharacterController _characterController;
     private bool _attemptedGetCharacterController;
     private Vector3 _gravityDirection;
     private bool _isMovingXROrigin;
+
+    public float _speed;
 
 
     /// <summary>
@@ -74,7 +79,8 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
         if (xrOrigin == null)
             return;
 
-        var input = ReadInput();
+        Vector2 input = ReadInput();
+        Input = input;
         var translationInWorldSpace = ComputeDesiredMove(input);
 
         switch (_gravityApplicationModeOverrided)
@@ -109,6 +115,53 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
                 Assert.IsTrue(false, $"Unhandled {nameof(LocomotionPhase)}={locomotionPhase}");
                 break;
         }
+    }
+
+    protected override Vector3 ComputeDesiredMove(Vector2 input)
+    {
+        //return base.ComputeDesiredMove(input);
+
+        if (input == Vector2.zero)
+            return Vector3.zero;
+
+        var xrOrigin = system.xrOrigin;
+        if (xrOrigin == null)
+            return Vector3.zero;
+
+        // Assumes that the input axes are in the range [-1, 1].
+        // Clamps the magnitude of the input direction to prevent faster speed when moving diagonally,
+        // while still allowing for analog input to move slower (which would be lost if simply normalizing).
+        var inputMove = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
+
+        // Determine frame of reference for what the input direction is relative to
+        /// пока поставим, что ориентир это только камера, далее тут можно будет поставить ориентир руку
+        var forwardSourceTransform = xrOrigin.Camera.transform;
+        var inputForwardInWorldSpace = forwardSourceTransform.forward;
+
+        var originTransform = xrOrigin.Origin.transform;
+        //var speedFactor = m_MoveSpeed * Time.deltaTime * originTransform.localScale.x; // Adjust speed with user scale
+
+        var originUp = originTransform.up;
+
+        //if (Mathf.Approximately(Mathf.Abs(Vector3.Dot(inputForwardInWorldSpace, originUp)), 1f))
+        //{
+        //    // When the input forward direction is parallel with the rig normal,
+        //    // it will probably feel better for the player to move along the same direction
+        //    // as if they tilted forward or up some rather than moving in the rig forward direction.
+        //    // It also will probably be a better experience to at least move in a direction
+        //    // rather than stopping if the head/controller is oriented such that it is perpendicular with the rig.
+        //    inputForwardInWorldSpace = -forwardSourceTransform.up;
+        //}
+
+        var inputForwardProjectedInWorldSpace = Vector3.ProjectOnPlane(inputForwardInWorldSpace, _gravityController.normalDirection);
+        var forwardRotation = Quaternion.FromToRotation(_gravityController.CameraOffsetTransform.forward, inputForwardProjectedInWorldSpace);
+
+        var forwardRotationTest = new Quaternion(forwardRotation.x, -forwardRotation.z, forwardRotation.y, forwardRotation.w);
+
+        var translationInRigSpace = forwardRotationTest * inputMove * Time.deltaTime * _speed;
+        var translationInWorldSpace = originTransform.TransformDirection(translationInRigSpace);
+
+        return translationInWorldSpace;
     }
 
     void FindCharacterController()
@@ -153,6 +206,7 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
                 _gravityDirection += _gravityController.GravityDirection * Time.deltaTime;
             }
 
+            
             motion += _gravityDirection * Time.deltaTime;
 
             if (CanBeginLocomotion() && BeginLocomotion())
