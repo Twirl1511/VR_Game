@@ -6,6 +6,7 @@ public class GravityController : MonoBehaviour
 {
     public float speed = 5f;   
     [SerializeField] private float _gravityForce = 9.81f;
+    [SerializeField] private float _distance = 2f;
     [SerializeField] private Transform _model;
     public LayerMask groundLayer;
     [SerializeField] private AnimationCurve _animationCurve;
@@ -15,67 +16,26 @@ public class GravityController : MonoBehaviour
     public float radius = 5f;                 // Радиус, на котором объект будет находиться
     public CustomGravityActionBasedModeProvider gravityProvider; // Ссылка на провайдера ввода
 
-    private Vector3 initialPosition;          // Исходное положение модели
-    private CharacterController characterController;
-
     //public Vector3 transInWSpace;
     public Vector3 GravityDirection { get; private set; }
     public Transform CameraOffsetTransform => _cameraOffset.transform;
-
-    public Vector3 normalDirection;
-    public Vector3 inputForwardProjectedInWorldSpace;
-    public Vector3 originalTranformForward;
-    public Vector3 inputForwardInWorldSpaceTEST;
-    private Vector3 inputMoveTest;
-    private Quaternion forwardRotationTest;
+    public Vector3 NormalDirection { get; private set; }
 
     private void Start()
     {
         GravityDirection = Vector3.down * _gravityForce;
-        characterController = GetComponent<CharacterController>();
-        initialPosition = _model.position;     // Сохраняем начальное положение модели
     }
 
     private void FixedUpdate()
     {
-        
-        // Получаем вектор направления от ввода
-        Vector2 input = gravityProvider.Input;
-
-        // Проверка наличия ввода
-        if (input != Vector2.zero) // Если есть движение
+        if (gravityProvider.Input != Vector2.zero)
         {
-            // Получаем направление движения в мировом пространстве
-            Vector3 newInput = GetTranslationInWorldSpace(input);
-
-            // Перемещаем модель к новой позиции
-            Vector3 targetPosition = center.position + newInput * radius;
+            var translationInWorldSpace = Vector3.Normalize(gravityProvider.TranslationInWorldSpace);
+            Vector3 targetPosition = center.position + translationInWorldSpace * radius;
             _model.position = targetPosition;
         }
 
         SurfaceAlignment();
-    }
-
-    private Vector3 GetTranslationInWorldSpace(Vector2 input)
-    {
-        var inputMove = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
-        inputMoveTest = inputMove;
-        Transform originTransform = _cameraOffset.transform;
-
-        inputForwardInWorldSpaceTEST = Camera.main.transform.forward;
-        inputForwardProjectedInWorldSpace = Vector3.ProjectOnPlane(Camera.main.transform.forward, normalDirection);
-        
-        var forwardRotation = Quaternion.FromToRotation(_cameraOffset.transform.forward, inputForwardProjectedInWorldSpace);
-
-        forwardRotationTest = new Quaternion(forwardRotation.x, -forwardRotation.z, forwardRotation.y, forwardRotation.w) ;
-        var translationInRigSpace = forwardRotationTest * inputMove;
-        var translationInWorldSpace = originTransform.TransformDirection(translationInRigSpace);
-
-        /// на земле по игрику
-        /// на стене по зету!!!!!
-        /// вращение
-
-        return translationInWorldSpace;
     }
 
     private void SurfaceAlignment()
@@ -85,11 +45,11 @@ public class GravityController : MonoBehaviour
 
         Quaternion rotationRef = Quaternion.identity;
 
-        if (Physics.Raycast(ray, out hitInfo, groundLayer))
+        if (Physics.Raycast(ray, out hitInfo, _distance, groundLayer))
         {
             GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
-            normalDirection = Vector3.Normalize(hitInfo.normal);
-            // Применяем выравнивание с использованием анимационной кривой
+            NormalDirection = Vector3.Normalize(hitInfo.normal);
+
             rotationRef = Quaternion.Lerp(_cameraOffset.transform.rotation, Quaternion.FromToRotation(Vector3.up, hitInfo.normal), _animationCurve.Evaluate(Time.time) * speed);
             _cameraOffset.transform.rotation = Quaternion.Euler(rotationRef.eulerAngles.x, _cameraOffset.transform.eulerAngles.y, rotationRef.eulerAngles.z);
         }

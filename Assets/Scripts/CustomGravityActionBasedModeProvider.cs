@@ -19,39 +19,41 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
     private bool _isUseGravity;
 
     [SerializeField]
+    private float _speed;
+
+    [SerializeField]
     [Tooltip("The Input System Action that will be used to read Move data from the left hand controller. Must be a Value Vector2 Control.")]
-    InputActionProperty m_LeftHandMoveAction = new InputActionProperty(new InputAction("Left Hand Move", expectedControlType: "Vector2"));
+    private InputActionProperty m_LeftHandMoveAction = new InputActionProperty(new InputAction("Left Hand Move", expectedControlType: "Vector2"));
+    
+    
+    [SerializeField]
+    [Tooltip("The Input System Action that will be used to read Move data from the right hand controller. Must be a Value Vector2 Control.")]
+    private InputActionProperty m_RightHandMoveAction = new InputActionProperty(new InputAction("Right Hand Move", expectedControlType: "Vector2"));
+    
+
     /// <summary>
     /// The Input System Action that Unity uses to read Move data from the left hand controller. Must be a <see cref="InputActionType.Value"/> <see cref="Vector2Control"/> Control.
     /// </summary>
-    public InputActionProperty leftHandMoveAction
+    public InputActionProperty LeftHandMoveAction
     {
         get => m_LeftHandMoveAction;
         set => SetInputActionProperty(ref m_LeftHandMoveAction, value);
     }
-
-    [SerializeField]
-    [Tooltip("The Input System Action that will be used to read Move data from the right hand controller. Must be a Value Vector2 Control.")]
-    InputActionProperty m_RightHandMoveAction = new InputActionProperty(new InputAction("Right Hand Move", expectedControlType: "Vector2"));
     /// <summary>
     /// The Input System Action that Unity uses to read Move data from the right hand controller. Must be a <see cref="InputActionType.Value"/> <see cref="Vector2Control"/> Control.
     /// </summary>
-    public InputActionProperty rightHandMoveAction
+    public InputActionProperty RightHandMoveAction
     {
         get => m_RightHandMoveAction;
         set => SetInputActionProperty(ref m_RightHandMoveAction, value);
     }
-
     public Vector2 Input { get; private set; }
-    public Vector2 TransInWorldSpace { get; private set; }
+    public Vector3 TranslationInWorldSpace { get; private set; }
 
     private CharacterController _characterController;
     private bool _attemptedGetCharacterController;
     private Vector3 _gravityDirection;
     private bool _isMovingXROrigin;
-
-    public float _speed;
-
 
     /// <summary>
     /// See <see cref="MonoBehaviour"/>.
@@ -82,7 +84,7 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
         Vector2 input = ReadInput();
         Input = input;
         var translationInWorldSpace = ComputeDesiredMove(input);
-
+        TranslationInWorldSpace = translationInWorldSpace;
         switch (_gravityApplicationModeOverrided)
         {
             case GravityApplicationMode.Immediately:
@@ -117,54 +119,146 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
         }
     }
 
+    //protected override Vector3 ComputeDesiredMove(Vector2 input)
+    //{
+    //    if (input == Vector2.zero)
+    //        return Vector3.zero;
+
+    //    var xrOrigin = system.xrOrigin;
+    //    if (xrOrigin == null)
+    //        return Vector3.zero;
+
+    //    // Assumes that the input axes are in the range [-1, 1].
+    //    // Clamps the magnitude of the input direction to prevent faster speed when moving diagonally,
+    //    // while still allowing for analog input to move slower (which would be lost if simply normalizing).
+    //    var inputMove = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
+
+    //    // Determine frame of reference for what the input direction is relative to
+    //    /// пока поставим, что ориентир это только камера, далее тут можно будет поставить ориентир руку
+    //    var forwardSourceTransform = xrOrigin.Camera.transform;
+    //    var inputForwardInWorldSpace = forwardSourceTransform.forward;
+
+    //    var originTransform = xrOrigin.Origin.transform;
+    //    //var speedFactor = m_MoveSpeed * Time.deltaTime * originTransform.localScale.x; // Adjust speed with user scale
+
+    //    var originUp = originTransform.up;
+
+    //    //if (Mathf.Approximately(Mathf.Abs(Vector3.Dot(inputForwardInWorldSpace, originUp)), 1f))
+    //    //{
+    //    //    // When the input forward direction is parallel with the rig normal,
+    //    //    // it will probably feel better for the player to move along the same direction
+    //    //    // as if they tilted forward or up some rather than moving in the rig forward direction.
+    //    //    // It also will probably be a better experience to at least move in a direction
+    //    //    // rather than stopping if the head/controller is oriented such that it is perpendicular with the rig.
+    //    //    inputForwardInWorldSpace = -forwardSourceTransform.up;
+    //    //}
+
+    //    var inputForwardProjectedInWorldSpace = Vector3.ProjectOnPlane(inputForwardInWorldSpace, _gravityController.NormalDirection);
+    //    var forwardRotation = Quaternion.FromToRotation(_gravityController.CameraOffsetTransform.forward, inputForwardProjectedInWorldSpace);
+
+    //    //var newForwardRotation = new Quaternion(forwardRotation.x, -forwardRotation.z, forwardRotation.y, forwardRotation.w);
+    //    var newForwardRotation = GetRotaionDependsOnNormale(forwardRotation, _gravityController.NormalDirection);
+    //    var translationInRigSpace = forwardRotation * inputMove * Time.deltaTime * _speed;
+    //    var translationInWorldSpace = originTransform.TransformDirection(translationInRigSpace);
+
+    //    return translationInWorldSpace;
+    //}
+
     protected override Vector3 ComputeDesiredMove(Vector2 input)
     {
-        //return base.ComputeDesiredMove(input);
-
-        if (input == Vector2.zero)
-            return Vector3.zero;
+        //if (input == Vector2.zero)
+        //    return Vector3.zero;
 
         var xrOrigin = system.xrOrigin;
         if (xrOrigin == null)
             return Vector3.zero;
 
-        // Assumes that the input axes are in the range [-1, 1].
-        // Clamps the magnitude of the input direction to prevent faster speed when moving diagonally,
-        // while still allowing for analog input to move slower (which would be lost if simply normalizing).
         var inputMove = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
+        var inputForwardInWorldSpace = xrOrigin.Camera.transform.forward;
 
-        // Determine frame of reference for what the input direction is relative to
-        /// пока поставим, что ориентир это только камера, далее тут можно будет поставить ориентир руку
-        var forwardSourceTransform = xrOrigin.Camera.transform;
-        var inputForwardInWorldSpace = forwardSourceTransform.forward;
-
-        var originTransform = xrOrigin.Origin.transform;
-        //var speedFactor = m_MoveSpeed * Time.deltaTime * originTransform.localScale.x; // Adjust speed with user scale
-
-        var originUp = originTransform.up;
-
-        //if (Mathf.Approximately(Mathf.Abs(Vector3.Dot(inputForwardInWorldSpace, originUp)), 1f))
-        //{
-        //    // When the input forward direction is parallel with the rig normal,
-        //    // it will probably feel better for the player to move along the same direction
-        //    // as if they tilted forward or up some rather than moving in the rig forward direction.
-        //    // It also will probably be a better experience to at least move in a direction
-        //    // rather than stopping if the head/controller is oriented such that it is perpendicular with the rig.
-        //    inputForwardInWorldSpace = -forwardSourceTransform.up;
-        //}
-
-        var inputForwardProjectedInWorldSpace = Vector3.ProjectOnPlane(inputForwardInWorldSpace, _gravityController.normalDirection);
+        var inputForwardProjectedInWorldSpace = Vector3.ProjectOnPlane(inputForwardInWorldSpace, _gravityController.NormalDirection);
         var forwardRotation = Quaternion.FromToRotation(_gravityController.CameraOffsetTransform.forward, inputForwardProjectedInWorldSpace);
+        
+        
+        forwardRotationTEST = forwardRotation;
+        var NEWforwardRotation = GetRotaionDependsOnNormale(forwardRotation, _gravityController.NormalDirection);
+        //normaDirection = _gravityController.NormalDirection;
+        NEWforwardRotationTEST = NEWforwardRotation;
 
-        var forwardRotationTest = new Quaternion(forwardRotation.x, -forwardRotation.z, forwardRotation.y, forwardRotation.w);
 
-        var translationInRigSpace = forwardRotationTest * inputMove * Time.deltaTime * _speed;
-        var translationInWorldSpace = originTransform.TransformDirection(translationInRigSpace);
-
+        var translationInRigSpace = NEWforwardRotation * inputMove * Time.deltaTime * _speed;
+        //var translationInWorldSpace = xrOrigin.Origin.transform.TransformDirection(translationInRigSpace);
+        var translationInWorldSpace = _gravityController.CameraOffsetTransform.TransformDirection(translationInRigSpace);
+        direction = translationInWorldSpace;
+        /// inputForwardProjectedInWorldSpace подставить вместо translationInRigSpace
         return translationInWorldSpace;
     }
 
-    void FindCharacterController()
+    private Quaternion GetRotaionDependsOnNormale(Quaternion currentQuaternion, Vector3 normalDirection)
+    {
+        float y = 0;
+
+        if (Mathf.Abs(normalDirection.x) > 0)
+        {
+            if(currentQuaternion.y > 0)
+            {
+                y += Mathf.Abs(currentQuaternion.x);
+            }
+            else
+            {
+                y -= Mathf.Abs(currentQuaternion.x);
+            }
+        }
+
+        if (Mathf.Abs(normalDirection.y) > 0)
+        {
+            y += currentQuaternion.y;
+        }
+
+        if (Mathf.Abs(normalDirection.z) > 0)
+        {
+            if (currentQuaternion.y > 0)
+            {
+                y += Mathf.Abs(currentQuaternion.z);
+            }
+            else
+            {
+                y -= Mathf.Abs(currentQuaternion.z);
+            }
+        }
+
+        if(Mathf.Approximately(normalDirection.z, -1))
+        {
+            y *= -1;
+        }
+        else 
+        {
+
+        }
+
+
+
+        return new Quaternion(0, y, 0, currentQuaternion.w);
+    }
+
+    private Vector3 direction, pointB;
+    public Quaternion forwardRotationTEST;
+    public Quaternion NEWforwardRotationTEST;
+    public Vector3 normaDirection;
+
+    private void OnDrawGizmos()
+    {
+        // Устанавливаем цвет для вектора
+        Gizmos.color = Color.red;
+
+        // Рассчитываем конечную точку вектора
+        Vector3 endPoint = _gravityController.CameraOffsetTransform.position + direction.normalized * 5;
+
+        // Рисуем основной вектор
+        Gizmos.DrawLine(_gravityController.CameraOffsetTransform.position, endPoint);
+    }
+
+    private void FindCharacterController()
     {
         var xrOrigin = system.xrOrigin?.Origin;
         if (xrOrigin == null)
@@ -237,7 +331,7 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
         return leftHandValue + rightHandValue;
     }
 
-    void SetInputActionProperty(ref InputActionProperty property, InputActionProperty value)
+    private void SetInputActionProperty(ref InputActionProperty property, InputActionProperty value)
     {
         if (Application.isPlaying)
             property.DisableDirectAction();
