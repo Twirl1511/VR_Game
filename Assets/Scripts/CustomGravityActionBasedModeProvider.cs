@@ -50,7 +50,8 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
     public Vector2 Input { get; private set; }
     public Vector3 TranslationInWorldSpace { get; private set; }
 
-    private CharacterController _characterController;
+    
+    [SerializeField] private CustomCharacterController _customCharacterController;
     private bool _attemptedGetCharacterController;
     private Vector3 _gravityDirection;
     private bool _isMovingXROrigin;
@@ -83,16 +84,16 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 
         Vector2 input = ReadInput();
         Input = input;
-        var translationInWorldSpace = ComputeDesiredMove(input);
-        TranslationInWorldSpace = translationInWorldSpace;
+        //var translationInWorldSpace = ComputeDesiredMove(input);
+        //TranslationInWorldSpace = translationInWorldSpace;
         switch (_gravityApplicationModeOverrided)
         {
             case GravityApplicationMode.Immediately:
-                MoveRig(translationInWorldSpace);
+                MoveRig(input);
                 break;
             case GravityApplicationMode.AttemptingMove:
                 if (input != Vector2.zero || _gravityDirection != Vector3.zero)
-                    MoveRig(translationInWorldSpace);
+                    MoveRig(input);
                 break;
             default:
                 Assert.IsTrue(false, $"{nameof(_gravityApplicationModeOverrided)}={_gravityApplicationModeOverrided} outside expected range.");
@@ -266,11 +267,11 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 
         // Save a reference to the optional CharacterController on the rig GameObject
         // that will be used to move instead of modifying the Transform directly.
-        if (_characterController == null && !_attemptedGetCharacterController)
+        if (_customCharacterController == null && !_attemptedGetCharacterController)
         {
             // Try on the Origin GameObject first, and then fallback to the XR Origin GameObject (if different)
-            if (!xrOrigin.TryGetComponent(out _characterController) && xrOrigin != system.xrOrigin.gameObject)
-                system.xrOrigin.TryGetComponent(out _characterController);
+            if (!xrOrigin.TryGetComponent(out _customCharacterController) && xrOrigin != system.xrOrigin.gameObject)
+                system.xrOrigin.TryGetComponent(out _customCharacterController);
 
             _attemptedGetCharacterController = true;
         }
@@ -286,28 +287,28 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 
         var motion = translationInWorldSpace;
 
-        if (_characterController != null && _characterController.enabled)
+        if (_customCharacterController != null && _customCharacterController.enabled)
         {
-            // Step vertical velocity from gravity
-            if (_characterController.isGrounded || !_isUseGravity)
-            {
-                _gravityDirection = Vector3.zero;
-                /// поставить, что гравитация вниз
-            }
-            else
-            {
-                /// тут ка краз заменить на кастомную гравитацию
-                _gravityDirection += _gravityController.GravityDirection * Time.deltaTime;
-            }
+            //// Step vertical velocity from gravity
+            //if (_customCharacterController.isGrounded || !_isUseGravity)
+            //{
+            //    _gravityDirection = Vector3.zero;
+            //    /// поставить, что гравитация вниз
+            //}
+            //else
+            //{
+            //    /// тут ка краз заменить на кастомную гравитацию
+            //    _gravityDirection += _gravityController.GravityDirection * Time.deltaTime;
+            //}
 
             
-            motion += _gravityDirection * Time.deltaTime;
+            //motion += _gravityDirection * Time.deltaTime;
 
             if (CanBeginLocomotion() && BeginLocomotion())
             {
                 // Note that calling Move even with Vector3.zero will have an effect by causing isGrounded to update
                 _isMovingXROrigin = true;
-                _characterController.Move(motion);
+                _customCharacterController.Move(motion);
                 EndLocomotion();
             }
         }
