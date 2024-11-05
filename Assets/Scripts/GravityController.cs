@@ -24,6 +24,7 @@ public class GravityController : MonoBehaviour
     private void Start()
     {
         GravityDirection = Vector3.down * _gravityForce;
+        NormalDirection = Vector3.up;
     }
 
     private void FixedUpdate()
@@ -35,23 +36,50 @@ public class GravityController : MonoBehaviour
             _model.position = targetPosition;
         }
 
-        SurfaceAlignment();
+        if(flag)
+            SurfaceAlignment();
     }
+
+    //private void SurfaceAlignment()
+    //{
+    //    Ray ray = new Ray(_model.position, -_model.up);
+    //    RaycastHit hitInfo;
+
+    //    Quaternion rotationRef = Quaternion.identity;
+
+    //    if (Physics.Raycast(ray, out hitInfo, _distance, groundLayer))
+    //    {
+    //        GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
+    //        NormalDirection = Vector3.Normalize(hitInfo.normal);
+    //    }
+
+    //    rotationRef = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(Vector3.up, NormalDirection), _animationCurve.Evaluate(Time.time) * speed);
+    //    transform.rotation = Quaternion.Euler(rotationRef.eulerAngles.x, transform.eulerAngles.y, rotationRef.eulerAngles.z);
+    //}
 
     private void SurfaceAlignment()
     {
         Ray ray = new Ray(_model.position, -_model.up);
         RaycastHit hitInfo;
 
-        Quaternion rotationRef = Quaternion.identity;
+        Quaternion rotationRef = transform.rotation; // »спользуем текущее вращение дл€ стабильности
 
         if (Physics.Raycast(ray, out hitInfo, _distance, groundLayer))
         {
             GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
             NormalDirection = Vector3.Normalize(hitInfo.normal);
 
-            rotationRef = Quaternion.Lerp(_cameraOffset.transform.rotation, Quaternion.FromToRotation(Vector3.up, hitInfo.normal), _animationCurve.Evaluate(Time.time) * speed);
-            _cameraOffset.transform.rotation = Quaternion.Euler(rotationRef.eulerAngles.x, _cameraOffset.transform.eulerAngles.y, rotationRef.eulerAngles.z);
+            // ѕолучаем требуемое вращение дл€ нормали поверхности
+            Quaternion targetRotation = Quaternion.FromToRotation(Vector3.up, NormalDirection);
+
+            // ѕлавное вращение с учетом текущего угла и заданной скорости
+            rotationRef = Quaternion.Lerp(rotationRef, targetRotation, _animationCurve.Evaluate(Time.time) * speed);
+
+            // ѕрисваиваем итоговое вращение
+            transform.rotation = rotationRef;
         }
+
     }
+
+    public bool flag = true;
 }

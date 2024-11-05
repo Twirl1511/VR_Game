@@ -3,21 +3,24 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class CustomCharacterController : MonoBehaviour
 {
-    [SerializeField]
-    private LayerMask _terrainLayerMask;
     public float moveSpeed = 5f;               // Скорость движения
     public float gravity = -9.81f;             // Гравитация
     public Vector3 surfaceNormal = Vector3.up; // Нормаль текущей поверхности (по умолчанию вверх)
+    public Transform vrCamera;                 // Ссылка на камеру VR для направления взгляда
+    public GravityController gravityController;
 
     private Rigidbody rb;
-    private Vector3 velocity;                  // Вектор текущей скорости
-    public bool isGrounded;                   // Переменная для проверки касания с поверхностью
+    private Vector3 velocity;
+    public bool isGrounded = true;
+    public float groundDistance = 2f;
+
+    private Vector3 SurfaceNormal => gravityController.NormalDirection;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;                 // Отключаем встроенную гравитацию Rigidbody
-        rb.isKinematic = false;                // Позволяем Rigidbody управлять столкновениями
+        rb.useGravity = false;
+        rb.isKinematic = false;
     }
 
     // Метод для установки нормали поверхности
@@ -26,22 +29,31 @@ public class CustomCharacterController : MonoBehaviour
         surfaceNormal = newNormal.normalized;
     }
 
-    // Метод перемещения, учитывающий нормаль поверхности и Rigidbody
+    // Метод перемещения с учетом направления взгляда в VR-шлеме
     public void Move(Vector2 input)
     {
-        // Определяем вектор движения в локальных осях персонажа
-        Vector3 moveDirection = (transform.right * input.x + transform.forward * input.y).normalized;
+        if (vrCamera == null)
+        {
+            Debug.LogWarning("VR Camera not assigned.");
+            return;
+        }
 
-        // Проецируем направление на текущую поверхность
-        Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, surfaceNormal).normalized;
+        // Определяем вектор направления движения с учетом ориентации камеры
+        Vector3 cameraForward = Vector3.ProjectOnPlane(vrCamera.forward, SurfaceNormal).normalized;
+        Vector3 cameraRight = Vector3.ProjectOnPlane(vrCamera.right, SurfaceNormal).normalized;
+
+        Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y).normalized;
+
+        // Проецируем направление движения на текущую поверхность
+        Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, SurfaceNormal).normalized;
 
         // Рассчитываем финальную скорость движения
         Vector3 moveVelocity = relativeMoveDirection * moveSpeed;
 
-        // Применяем гравитацию, если персонаж не на поверхности
+        //Применяем гравитацию, если персонаж не на поверхности
         if (!isGrounded)
         {
-            velocity += surfaceNormal * gravity * Time.deltaTime;
+            velocity += gravityController.GravityDirection * Time.deltaTime;
         }
         else
         {
@@ -54,7 +66,7 @@ public class CustomCharacterController : MonoBehaviour
 
     void Update()
     {
-        //// Пример ввода с клавиатуры (замените по мере необходимости)
+        //// Пример ввода с контроллера или клавиатуры
         //Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         //Move(input);
 
@@ -65,12 +77,11 @@ public class CustomCharacterController : MonoBehaviour
     // Проверка касания поверхности и обновление нормали
     private void UpdateSurfaceNormal()
     {
-        RaycastHit hitInfo;
-
-        if (Physics.Raycast(transform.position, -transform.up, out hitInfo, 1f))
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -transform.up, out hit, groundDistance))
         {
             isGrounded = true;
-            SetSurfaceNormal(hitInfo.normal);
+            //SetSurfaceNormal(hit.normal);
         }
         else
         {

@@ -84,8 +84,8 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 
         Vector2 input = ReadInput();
         Input = input;
-        //var translationInWorldSpace = ComputeDesiredMove(input);
-        //TranslationInWorldSpace = translationInWorldSpace;
+        var translationInWorldSpace = ComputeDesiredMove(input);
+        TranslationInWorldSpace = translationInWorldSpace;
         switch (_gravityApplicationModeOverrided)
         {
             case GravityApplicationMode.Immediately:
