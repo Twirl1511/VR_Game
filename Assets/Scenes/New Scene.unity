@@ -1010,7 +1010,7 @@ GameObject:
   - component: {fileID: 238739087}
   - component: {fileID: 238739090}
   - component: {fileID: 238739091}
-  - component: {fileID: 238739093}
+  - component: {fileID: 238739095}
   - component: {fileID: 238739092}
   - component: {fileID: 238739094}
   m_Layer: 7
@@ -1154,7 +1154,6 @@ MonoBehaviour:
   m_UseGravity: 1
   m_GravityApplicationMode: 1
   m_ForwardSource: {fileID: 595532939}
-  _gravityController: {fileID: 238739091}
   _gravityApplicationModeOverrided: 1
   _isUseGravity: 1
   _speed: 3
@@ -1182,7 +1181,7 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
-  _customCharacterController: {fileID: 238739093}
+  _customCharacterController: {fileID: 238739095}
   forwardRotationTEST: {x: 0, y: 0, z: 0, w: 0}
   NEWforwardRotationTEST: {x: 0, y: 0, z: 0, w: 0}
   normaDirection: {x: 0, y: 0, z: 0}
@@ -1198,42 +1197,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64e5c0e2557c624469b097759fc12ae3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.1
-  _gravityForce: 9.81
-  _distance: 2
-  _model: {fileID: 644587096}
-  groundLayer:
+  _customGravityCharacterController: {fileID: 0}
+  gravityProvider: {fileID: 238739090}
+  _distanceToFloor: 3
+  _radiusFloorDetector: 1
+  _floorDetector: {fileID: 644587096}
+  _groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  _animationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _cameraOffset: {fileID: 616913497}
-  center: {fileID: 336808551}
-  radius: 1
-  gravityProvider: {fileID: 238739090}
-  flag: 1
+  _center: {fileID: 336808551}
+  _gravityForce: 9.81
 --- !u!136 &238739092
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1257,25 +1230,6 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.3, z: 0}
---- !u!114 &238739093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 238739078}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb3cfe63b1630434f970118240edfcf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 4
-  gravity: -9.81
-  surfaceNormal: {x: 0, y: 1, z: 0}
-  vrCamera: {fileID: 595532939}
-  gravityController: {fileID: 238739091}
-  isGrounded: 0
-  groundDistance: 1
 --- !u!54 &238739094
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1303,6 +1257,47 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &238739095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 238739078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960db1edc9c72ff4bbca15bfb7f36628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gravityController: {fileID: 238739091}
+  _moveSpeed: 4
+  _changeAlignmentSpeed: 0.15
+  _camera: {fileID: 595532939}
+  _checkGroundDistance: 1
+  _animationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &246683893
 GameObject:
   m_ObjectHideFlags: 0
@@ -3005,7 +3000,7 @@ GameObject:
   - component: {fileID: 644587098}
   - component: {fileID: 644587097}
   m_Layer: 7
-  m_Name: w
+  m_Name: FloorDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

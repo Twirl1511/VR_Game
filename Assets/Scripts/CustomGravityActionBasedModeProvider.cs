@@ -9,9 +9,6 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs;
 public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 {
     [SerializeField]
-    private GravityController _gravityController;
-
-    [SerializeField]
     [Tooltip("Controls when gravity begins to take effect.")]
     private GravityApplicationMode _gravityApplicationModeOverrided;
 
@@ -51,7 +48,7 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
     public Vector3 TranslationInWorldSpace { get; private set; }
 
     
-    [SerializeField] private CustomCharacterController _customCharacterController;
+    [SerializeField] private CustomGravityCharacterController _customCharacterController;
     private bool _attemptedGetCharacterController;
     private Vector3 _gravityDirection;
     private bool _isMovingXROrigin;
@@ -84,8 +81,8 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 
         Vector2 input = ReadInput();
         Input = input;
-        var translationInWorldSpace = ComputeDesiredMove(input);
-        TranslationInWorldSpace = translationInWorldSpace;
+        //var translationInWorldSpace = ComputeDesiredMove(input);
+        //TranslationInWorldSpace = translationInWorldSpace;
         switch (_gravityApplicationModeOverrided)
         {
             case GravityApplicationMode.Immediately:
@@ -165,35 +162,35 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
     //    return translationInWorldSpace;
     //}
 
-    protected override Vector3 ComputeDesiredMove(Vector2 input)
-    {
-        //if (input == Vector2.zero)
-        //    return Vector3.zero;
+    //protected override Vector3 ComputeDesiredMove(Vector2 input)
+    //{
+    //    //if (input == Vector2.zero)
+    //    //    return Vector3.zero;
 
-        var xrOrigin = system.xrOrigin;
-        if (xrOrigin == null)
-            return Vector3.zero;
+    //    var xrOrigin = system.xrOrigin;
+    //    if (xrOrigin == null)
+    //        return Vector3.zero;
 
-        var inputMove = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
-        var inputForwardInWorldSpace = xrOrigin.Camera.transform.forward;
+    //    var inputMove = Vector3.ClampMagnitude(new Vector3(input.x, 0f, input.y), 1f);
+    //    var inputForwardInWorldSpace = xrOrigin.Camera.transform.forward;
 
-        var inputForwardProjectedInWorldSpace = Vector3.ProjectOnPlane(inputForwardInWorldSpace, _gravityController.NormalDirection);
-        var forwardRotation = Quaternion.FromToRotation(_gravityController.CameraOffsetTransform.forward, inputForwardProjectedInWorldSpace);
+    //    var inputForwardProjectedInWorldSpace = Vector3.ProjectOnPlane(inputForwardInWorldSpace, _customGravityCharacterController.NormalDirection);
+    //    var forwardRotation = Quaternion.FromToRotation(_customGravityCharacterController.CameraOffsetTransform.forward, inputForwardProjectedInWorldSpace);
         
         
-        forwardRotationTEST = forwardRotation;
-        var NEWforwardRotation = GetRotaionDependsOnNormale(forwardRotation, _gravityController.NormalDirection);
-        //normaDirection = _gravityController.NormalDirection;
-        NEWforwardRotationTEST = NEWforwardRotation;
+    //    forwardRotationTEST = forwardRotation;
+    //    var NEWforwardRotation = GetRotaionDependsOnNormale(forwardRotation, _customGravityCharacterController.NormalDirection);
+    //    //normaDirection = _gravityController.NormalDirection;
+    //    NEWforwardRotationTEST = NEWforwardRotation;
 
 
-        var translationInRigSpace = NEWforwardRotation * inputMove * Time.deltaTime * _speed;
-        //var translationInWorldSpace = xrOrigin.Origin.transform.TransformDirection(translationInRigSpace);
-        var translationInWorldSpace = _gravityController.CameraOffsetTransform.TransformDirection(translationInRigSpace);
-        direction = translationInWorldSpace;
-        /// inputForwardProjectedInWorldSpace подставить вместо translationInRigSpace
-        return translationInWorldSpace;
-    }
+    //    var translationInRigSpace = NEWforwardRotation * inputMove * Time.deltaTime * _speed;
+    //    //var translationInWorldSpace = xrOrigin.Origin.transform.TransformDirection(translationInRigSpace);
+    //    var translationInWorldSpace = _customGravityCharacterController.CameraOffsetTransform.TransformDirection(translationInRigSpace);
+    //    direction = translationInWorldSpace;
+    //    /// inputForwardProjectedInWorldSpace подставить вместо translationInRigSpace
+    //    return translationInWorldSpace;
+    //}
 
     private Quaternion GetRotaionDependsOnNormale(Quaternion currentQuaternion, Vector3 normalDirection)
     {
@@ -247,17 +244,17 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
     public Quaternion NEWforwardRotationTEST;
     public Vector3 normaDirection;
 
-    private void OnDrawGizmos()
-    {
-        // Устанавливаем цвет для вектора
-        Gizmos.color = Color.red;
+    //private void OnDrawGizmos()
+    //{
+    //    // Устанавливаем цвет для вектора
+    //    Gizmos.color = Color.red;
 
-        // Рассчитываем конечную точку вектора
-        Vector3 endPoint = _gravityController.CameraOffsetTransform.position + direction.normalized * 5;
+    //    // Рассчитываем конечную точку вектора
+    //    Vector3 endPoint = _customGravityCharacterController.CameraOffsetTransform.position + direction.normalized * 5;
 
-        // Рисуем основной вектор
-        Gizmos.DrawLine(_gravityController.CameraOffsetTransform.position, endPoint);
-    }
+    //    // Рисуем основной вектор
+    //    Gizmos.DrawLine(_customGravityCharacterController.CameraOffsetTransform.position, endPoint);
+    //}
 
     private void FindCharacterController()
     {
