@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GravityController : MonoBehaviour
@@ -14,6 +15,10 @@ public class GravityController : MonoBehaviour
     public Vector3 NormalDirection { get; private set; }
     public Vector3 GravityDirection { get; private set; }
 
+    private RaycastHit _previousRaycastHit;
+
+    public event Action OnChangeFloor;
+
 
 
 
@@ -29,6 +34,10 @@ public class GravityController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hitInfo, _distanceToFloor, _groundLayer))
         {
+            if (_previousRaycastHit.normal != hitInfo.normal)
+                OnChangeFloor?.Invoke();
+
+            _previousRaycastHit = hitInfo;
             GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
             NormalDirection = Vector3.Normalize(hitInfo.normal);
         }

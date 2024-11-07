@@ -30,7 +30,6 @@ public class CustomGravityCharacterController : MonoBehaviour
     {
         CheckGround();
         SurfaceAlignment();
-        
     }
 
     private void CheckGround()

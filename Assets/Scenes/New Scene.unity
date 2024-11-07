@@ -1060,7 +1060,7 @@ Transform:
   m_GameObject: {fileID: 238739078}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.15, y: 2.63, z: -12.92}
+  m_LocalPosition: {x: 17.15, y: 2.63, z: -7.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7479,12 +7479,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 595532939}
     m_Modifications:
     - target: {fileID: 4696109703053683886, guid: 0e039b13394cc8a47bcf1602f4b61e27, type: 3}
+      propertyPath: _gravityController
+      value: 
+      objectReference: {fileID: 238739091}
+    - target: {fileID: 4696109703053683886, guid: 0e039b13394cc8a47bcf1602f4b61e27, type: 3}
       propertyPath: _parameters.m_EaseInTime
       value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4696109703053683886, guid: 0e039b13394cc8a47bcf1602f4b61e27, type: 3}
       propertyPath: _parameters.m_EaseOutTime
-      value: 1
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4696109703053683886, guid: 0e039b13394cc8a47bcf1602f4b61e27, type: 3}
+      propertyPath: _parameters.m_EaseOutDelayTime
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4696109703053683886, guid: 0e039b13394cc8a47bcf1602f4b61e27, type: 3}
       propertyPath: _parameters.m_FeatheringEffect

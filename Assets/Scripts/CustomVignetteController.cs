@@ -4,6 +4,11 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class CustomVignetteController : MonoBehaviour
 {
     const string k_DefaultShader = "VR/TunnelingVignette";
+    public readonly int _apertureSize = Shader.PropertyToID("_ApertureSize");
+    public readonly int _featheringEffect = Shader.PropertyToID("_FeatheringEffect");
+
+    [SerializeField]
+    private GravityController _gravityController;
 
     [SerializeField]
     private VignetteParameters _parameters = new VignetteParameters();
@@ -24,42 +29,62 @@ public class CustomVignetteController : MonoBehaviour
         Disappear
     }
     private Status _currentStatus;
-
-    private static class ShaderPropertyLookup
-    {
-        public static readonly int apertureSize = Shader.PropertyToID("_ApertureSize");
-        public static readonly int featheringEffect = Shader.PropertyToID("_FeatheringEffect");
-        public static readonly int vignetteColor = Shader.PropertyToID("_VignetteColor");
-        public static readonly int vignetteColorBlend = Shader.PropertyToID("_VignetteColorBlend");
-    }
+    private float _timer;
 
     private void Start()
     {
         SetUpMaterial();
         UpdateTunnelingVignette(_defaultParameters);
+        _gravityController.OnChangeFloor += ActivateVignette;
+    }
+
+    private void OnDestroy()
+    {
+        _gravityController.OnChangeFloor -= ActivateVignette;
     }
 
     private void Update()
     {
         if (_currentStatus == Status.Appear)
         {
+            if (Mathf.Approximately(_currentParameters.apertureSize, _parameters.apertureSize))
+            {
+                _elapsedTime = 0;
+                _timer += Time.deltaTime;
+                if(_timer >= _parameters.easeOutDelayTime)
+                {
+                    _currentStatus = Status.Disappear;
+                    _timer = 0;
+                }
+
+                return;
+            }
+
+
             _currentParameters.apertureSize = LerpValue(_currentParameters.apertureSize, _parameters.apertureSize, _parameters.easeInTime);
             _currentParameters.featheringEffect = LerpValue(_currentParameters.featheringEffect, _parameters.featheringEffect, _parameters.easeInTime);
             UpdateTunnelingVignette(_currentParameters);
+
         }
         else if(_currentStatus == Status.Disappear)
         {
-            _currentParameters.apertureSize = LerpValue(_currentParameters.apertureSize, _defaultParameters.apertureSize, _parameters.easeInTime);
-            _currentParameters.featheringEffect = LerpValue(_currentParameters.featheringEffect, _defaultParameters.featheringEffect, _parameters.easeInTime);
+            _currentParameters.apertureSize = LerpValue(_currentParameters.apertureSize, _defaultParameters.apertureSize, _parameters.easeOutTime);
+            _currentParameters.featheringEffect = LerpValue(_currentParameters.featheringEffect, _defaultParameters.featheringEffect, _parameters.easeOutTime);
             UpdateTunnelingVignette(_currentParameters);
+
+            if (Mathf.Approximately(_currentParameters.apertureSize, _defaultParameters.apertureSize))
+            {
+                _elapsedTime = 0;
+                _currentStatus = Status.None;
+            }
         }
     }
 
     private void UpdateTunnelingVignette(VignetteParameters parameters)
     {
         m_MeshRender.GetPropertyBlock(m_VignettePropertyBlock);
-        m_VignettePropertyBlock.SetFloat(ShaderPropertyLookup.apertureSize, parameters.apertureSize);
-        m_VignettePropertyBlock.SetFloat(ShaderPropertyLookup.featheringEffect, parameters.featheringEffect);
+        m_VignettePropertyBlock.SetFloat(_apertureSize, parameters.apertureSize);
+        m_VignettePropertyBlock.SetFloat(_featheringEffect, parameters.featheringEffect);
         m_MeshRender.SetPropertyBlock(m_VignettePropertyBlock);
     }
 
@@ -121,16 +146,33 @@ public class CustomVignetteController : MonoBehaviour
         return Mathf.Lerp(start, end, t);
     }
 
+    private void ActivateVignette()
+    {
+        if (_currentStatus == Status.Appear)
+            return;
+
+        SetAppearStatus();
+    }
+
+
+
+
 
     [ContextMenu("AppearStatus")]
-    public void AppearStatus()
+    public void SetAppearStatus()
     {
         _currentStatus = Status.Appear;
     }
 
     [ContextMenu("DissapearStatus")]
-    public void DissapearStatus()
+    public void SetDissapearStatus()
     {
         _currentStatus = Status.Disappear;
+    }
+
+    [ContextMenu("SetNoneStatus")]
+    public void SetNoneStatus()
+    {
+        _currentStatus = Status.None;
     }
 }
