@@ -22,6 +22,12 @@ public class GravityController : MonoBehaviour
 
 
 
+    private void Start()
+    {
+        GravityDirection = Vector3.down * _gravityForce;
+        NormalDirection = Vector3.up;
+    }
+
     private void FixedUpdate()
     {
         CheckGravityDirection();
@@ -29,15 +35,13 @@ public class GravityController : MonoBehaviour
 
     private void CheckGravityDirection()
     {
-        Ray ray = new Ray(_floorDetector.position, -_floorDetector.up);
+        Ray ray = new Ray(_floorDetector.position, _floorDetector.forward);
         RaycastHit hitInfo;
 
         if (Physics.Raycast(ray, out hitInfo, _distanceToFloor, _groundLayer))
         {
-            if (_previousRaycastHit.normal != hitInfo.normal)
-                OnChangeFloor?.Invoke();
+            OnChangeFloor?.Invoke();
 
-            _previousRaycastHit = hitInfo;
             GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
             NormalDirection = Vector3.Normalize(hitInfo.normal);
         }

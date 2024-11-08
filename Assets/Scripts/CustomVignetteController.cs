@@ -35,6 +35,8 @@ public class CustomVignetteController : MonoBehaviour
     {
         SetUpMaterial();
         UpdateTunnelingVignette(_defaultParameters);
+        _currentParameters.apertureSize = 1;
+        _currentParameters.featheringEffect = 1;
         _gravityController.OnChangeFloor += ActivateVignette;
     }
 

@@ -120,7 +120,7 @@ Material:
     - _ColorMask: 15
     - _EnableHeightBlend: 0
     - _EnableInstancedPerPixelNormal: 1
-    - _FeatheringEffect: 0.28
+    - _FeatheringEffect: 1
     - _Glossiness: 0.5
     - _HeightTransition: 0
     - _HueVariationKwToggle: 0
