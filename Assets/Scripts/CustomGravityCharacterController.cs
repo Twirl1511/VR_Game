@@ -44,7 +44,9 @@ public class CustomGravityCharacterController : MonoBehaviour
     private void SurfaceAlignment()
     {
         Quaternion rotationRef = transform.rotation;
-        Quaternion targetRotation = Quaternion.FromToRotation(Vector3.up, NormalDirection);
+        Quaternion alignToNormal = Quaternion.FromToRotation(transform.up, NormalDirection);
+        Quaternion targetRotation = alignToNormal * rotationRef;
+
         rotationRef = Quaternion.Lerp(rotationRef, targetRotation, _animationCurve.Evaluate(Time.time) * _changeAlignmentSpeed);
         transform.rotation = rotationRef;
     }
@@ -54,12 +56,6 @@ public class CustomGravityCharacterController : MonoBehaviour
 
     public void Move(Vector2 input)
     {
-        if (_camera == null)
-        {
-            Debug.LogWarning("VR Camera not assigned.");
-            return;
-        }
-
         Vector3 cameraForward = Vector3.ProjectOnPlane(_camera.forward, NormalDirection).normalized;
         Vector3 cameraRight = Vector3.ProjectOnPlane(_camera.right, NormalDirection).normalized;
 
@@ -70,7 +66,9 @@ public class CustomGravityCharacterController : MonoBehaviour
         _gravityVelocity = GetGravityVelocity(_isGrounded);
         _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityVelocity) * Time.deltaTime);
 
-        _gravityController.MoveFloorDetector(relativeMoveDirection);
+        if(input != Vector2.zero)
+            _gravityController.MoveFloorDetector(relativeMoveDirection);
+
 
 
 
