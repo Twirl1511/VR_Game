@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3886778092238640002}
+  - component: {fileID: 8780366704482905321}
   m_Layer: 0
   m_Name: Physics Hands
   m_TagString: Untagged
@@ -33,6 +34,22 @@ Transform:
   - {fileID: 4461368226341237224}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8780366704482905321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3904965869833951581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04a40dd58c64de844911f4ab47e915bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _physicsHands:
+  - {fileID: 8624664853676852221}
+  - {fileID: 7225591133095479195}
+  _customGravityCharacterController: {fileID: 0}
 --- !u!1 &5469458793973424923
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,7 +165,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5469458793973424923}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 3
   m_Drag: 1
   m_AngularDrag: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -184,8 +201,11 @@ MonoBehaviour:
   _rotFrequency: 100
   _rotDamping: 0.9
   _playerRigidbody: {fileID: 0}
-  _targetHand: {fileID: 0}
+  _target: {fileID: 0}
   _selfRigidbody: {fileID: 4123905026466114861}
+  _buttonAction: {fileID: -6131295136447488360, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  _climbForce: 1000
+  _climbDrag: 500
 --- !u!1 &5692821350756837011
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,7 +321,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5692821350756837011}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 3
   m_Drag: 1
   m_AngularDrag: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -337,5 +357,8 @@ MonoBehaviour:
   _rotFrequency: 100
   _rotDamping: 0.9
   _playerRigidbody: {fileID: 0}
-  _targetHand: {fileID: 0}
+  _target: {fileID: 0}
   _selfRigidbody: {fileID: 1461187064101068927}
+  _buttonAction: {fileID: 187161793506945269, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  _climbForce: 1000
+  _climbDrag: 500

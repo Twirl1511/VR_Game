@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PhysicsHand : MonoBehaviour
 {
@@ -7,95 +8,76 @@ public class PhysicsHand : MonoBehaviour
     [SerializeField] private float _damping = 1f;
     [SerializeField] private float _rotFrequency = 100f;
     [SerializeField] private float _rotDamping = 0.9f;
-    [SerializeField] private float _speed = 3f;
-    [SerializeField] private CustomGravityCharacterController _customGravityCharacterController;
     [SerializeField] private Rigidbody _playerRigidbody;
-    [SerializeField] private Transform _targetHand;
+    [SerializeField] private Transform _target;
     [SerializeField] private Rigidbody _selfRigidbody;
-    [SerializeField] private float _smoothSpeed = 0.1f;
-    [SerializeField] private ControllerCollisionChecker _controllerCollisionChecker;
 
-    public bool IsCollision { get; private set; }
+    [SerializeField] private InputActionReference _buttonAction;
 
-    private Vector3 _startCollision;
-    private Vector3 _smoothedPosition;
-    private bool _canMove = true;
+    [Space]
+    [Header("Springs")]
+    [SerializeField] private float _climbForce = 1000f;
+    [SerializeField] private float _climbDrag = 500f;
+
+    private Vector3 _previousPosition;
+    private bool _isColliding;
+    private bool _canJump;
 
     void Start()
     {
-        transform.SetPositionAndRotation(_targetHand.position, _targetHand.rotation);
+        transform.SetPositionAndRotation(_target.position, _target.rotation);
+        _selfRigidbody = GetComponent<Rigidbody>();
         _selfRigidbody.maxAngularVelocity = float.PositiveInfinity;
-        _smoothedPosition = _targetHand.position;
+        _previousPosition = transform.position;
+
+        _buttonAction.action.performed += Action_performed;
+        _buttonAction.action.canceled += Action_canceled;
     }
 
-    private void FixedUpdate()
+    private void Action_canceled(InputAction.CallbackContext obj)
     {
-        if (!_controllerCollisionChecker.IsTriggered)
-        {
-            PIDMovement();
-            PIDRotation();
-        }
-        else
-        {
-            /// тут нужно вручную задавать гравитацию рукам, чтобы они не улетали
-        }
-            
-
-        if (IsCollision && _canMove)
-        {
-            _smoothedPosition = Vector3.Lerp(_smoothedPosition, _targetHand.position, _smoothSpeed * Time.deltaTime);
-            Vector3 direction = _startCollision - _smoothedPosition;
-            Vector2 normalizedInput = ConvertDirectionToInput(direction);
-
-            /// прикол что в момент касания магнитуда меньше 0,21 и мы сразу кэн мув в фолс кидаем
-
-
-            if (direction.magnitude > 0.21f)
-            {
-                _customGravityCharacterController.Move(normalizedInput, direction.magnitude * _speed);
-            }
-            else
-            {
-                _canMove = false;
-            }
-            /// придумать как измебжать дергания когда рука и стартовая позиция близко друг к другу
-            /// при проверке магнитуды все равно дергается, нужно доводить до стартовой позиции и больше не считать
-            /// вообще не заходить в из колижен
-
-        }
-        else
-        {
-            _smoothedPosition = _targetHand.position;
-        }
+        _canJump = false;
     }
 
-    private Vector2 ConvertDirectionToInput(Vector3 direction)
+    private void Action_performed(InputAction.CallbackContext obj)
     {
-        Vector3 localDirection = Camera.main.transform.InverseTransformDirection(direction);
-        Vector2 input = new Vector2(localDirection.x, localDirection.z);
-
-        return input.normalized;
+        _canJump = true;
     }
 
-    private void PIDMovement()
+    private void OnDisable()
+    {
+        _buttonAction.action.performed -= Action_performed;
+        _buttonAction.action.canceled -= Action_canceled;
+    }
+
+    void FixedUpdate()
+    {
+        PIDMovement();
+        PIDRotation();
+
+        if (_isColliding && _canJump) 
+            HookesLaw();
+    }
+
+    void PIDMovement()
     {
         float kp = (6f * _frequency) * (6f * _frequency) * 0.25f;
         float kd = 4.5f * _frequency * _damping;
         float g = 1 / (1 + kd * Time.fixedDeltaTime + kp * Time.fixedDeltaTime * Time.fixedDeltaTime);
         float ksg = kp * g;
         float kdg = (kd + kp * Time.fixedDeltaTime) * g;
-        Vector3 force = (_targetHand.position - transform.position) * ksg + (_playerRigidbody.velocity - _selfRigidbody.velocity) * kdg;
+        Vector3 force = (_target.position - transform.position) * ksg + (_playerRigidbody.velocity - _selfRigidbody.velocity) * kdg;
         _selfRigidbody.AddForce(force, ForceMode.Acceleration);
     }
 
-    private void PIDRotation()
+    void PIDRotation()
     {
         float kp = (6f * _rotFrequency) * (6f * _rotFrequency) * 0.25f;
         float kd = 4.5f * _rotFrequency * _rotDamping;
         float g = 1 / (1 + kd * Time.fixedDeltaTime + kp * Time.fixedDeltaTime * Time.fixedDeltaTime);
         float ksg = kp * g;
         float kdg = (kd + kp * Time.fixedDeltaTime) * g;
-        Quaternion q = _targetHand.rotation * Quaternion.Inverse(transform.rotation);
+        Quaternion q = _target.rotation * Quaternion.Inverse(transform.rotation);
         if (q.w < 0)
         {
             q.x = -q.x;
@@ -110,15 +92,33 @@ public class PhysicsHand : MonoBehaviour
         _selfRigidbody.AddTorque(torque, ForceMode.Acceleration);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void HookesLaw()
     {
-        _startCollision = transform.position;
-        IsCollision = true;
-        _canMove = true;
+        Vector3 displacementFromResting = transform.position - _target.position;
+        Vector3 force = displacementFromResting * _climbForce;
+        float drag = GetDrag();
+
+        _playerRigidbody.AddForce(force, ForceMode.Acceleration);
+        _playerRigidbody.AddForce(drag * -_playerRigidbody.velocity * _climbDrag, ForceMode.Acceleration);
     }
 
-    private void OnCollisionExit(Collision collision)
+    float GetDrag()
     {
-        IsCollision = false;
+        Vector3 handVelocity = (_target.localPosition - _previousPosition) / Time.fixedDeltaTime;
+        float drag = 1 / handVelocity.magnitude + 0.01f;
+        drag = drag > 1 ? 1 : drag;
+        drag = drag < 0.03f ? 0.03f : drag;
+        _previousPosition = transform.position;
+        return drag;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        _isColliding = true;
+    }
+
+    void OnCollisionExit(Collision other)
+    {
+        _isColliding = false;
     }
 }

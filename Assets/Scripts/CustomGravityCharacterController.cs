@@ -26,22 +26,35 @@ public class CustomGravityCharacterController : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody>();
         _rigidBody.useGravity = false;
         _rigidBody.isKinematic = false;
-        CheckGround();
-        Move(Vector2.up, _moveSpeed);
+        //_isGrounded = GetIsGround();
     }
     private void FixedUpdate()
     {
-        CheckGround();
+        //_isGrounded = GetIsGround();
         SurfaceAlignment();
     }
 
-    private void CheckGround()
+    private bool GetIsGround()
     {
-        _isGrounded = Physics.Raycast(
-            transform.position, 
-            -transform.up, 
-            out _, 
-            _checkGroundDistance);
+        return Physics.Raycast(transform.position, -transform.up, out _, _checkGroundDistance);
+    }
+
+    private void GetIsGround11111()
+    {
+        Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, float.MaxValue);
+        float distance = Vector3.Distance(transform.position, hit.point);
+        if(distance <= _checkGroundDistance)
+        {
+
+        }
+        else if (distance > _checkGroundDistance && distance < 2)
+        {
+
+        }
+        else if(distance > 2)
+        {
+
+        }
     }
 
     private void SurfaceAlignment()
@@ -69,34 +82,6 @@ public class CustomGravityCharacterController : MonoBehaviour
         _gravityVelocity = GetGravityVelocity(_isGrounded);
         _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityVelocity) * Time.deltaTime);
 
-        if(input != Vector2.zero)
-            _gravityController.MoveFloorDetector(relativeMoveDirection);
-
-
-
-
-        return;
-        Vector3 GetGravityVelocity(bool isGrounded)
-        {
-            if (!isGrounded)
-                return _gravityVelocity += GravityDirection * Time.deltaTime;
-            else
-                return _gravityVelocity = Vector3.zero;
-        }
-    }
-
-    public void Move(Vector2 input, float speed)
-    {
-        Vector3 cameraForward = Vector3.ProjectOnPlane(_camera.forward, NormalDirection).normalized;
-        Vector3 cameraRight = Vector3.ProjectOnPlane(_camera.right, NormalDirection).normalized;
-
-        Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y).normalized;
-        Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection).normalized;
-        Vector3 moveVelocity = relativeMoveDirection * speed;
-
-        _gravityVelocity = GetGravityVelocity(_isGrounded);
-        _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityVelocity) * Time.deltaTime);
-
         if (input != Vector2.zero)
         {
             _gravityController.MoveFloorDetector(relativeMoveDirection);
@@ -109,10 +94,71 @@ public class CustomGravityCharacterController : MonoBehaviour
         return;
         Vector3 GetGravityVelocity(bool isGrounded)
         {
-            if (!isGrounded)
-                return _gravityVelocity += GravityDirection * Time.deltaTime;
-            else
+            Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, float.MaxValue);
+            float distance = Vector3.Distance(transform.position, hit.point);
+
+            if (distance <= _checkGroundDistance)
+            {
                 return _gravityVelocity = Vector3.zero;
+            }
+            else if (distance > _checkGroundDistance && distance < 2)
+            {
+                return _gravityVelocity += GravityDirection * Time.deltaTime;
+            }
+            else if (distance > 2)
+            {
+                return _gravityVelocity += Vector3.down * 9.81f * Time.deltaTime;
+            }
+
+            /// когда понимаем что гравитация вниз, то всегда поворачиваем в сторону нормали вверх
+            /// походу это все надо переносить в гравити контроллер
+            /// 
+            /// 
+            /// 
+            /// еще надо придумать как залезать по стене на крышу!!!!!!!!!!!!!!!!!!!!!!!!
+            /// 
+
+            /// придумать сглаживание для прыжка, чтобы плеера не колбасило
+
+            print("ERROR!!!!!!!!!!!!!!!!!!");
+            return _gravityVelocity = Vector3.zero;
+
+
+            //if (isGrounded)
+            //    return _gravityVelocity = Vector3.zero;
+            //else
+            //    return _gravityVelocity += GravityDirection * Time.deltaTime;
         }
     }
+
+    //public void Move(Vector2 input, float speed)
+    //{
+    //    Vector3 cameraForward = Vector3.ProjectOnPlane(_camera.forward, NormalDirection).normalized;
+    //    Vector3 cameraRight = Vector3.ProjectOnPlane(_camera.right, NormalDirection).normalized;
+
+    //    Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y).normalized;
+    //    Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection).normalized;
+    //    Vector3 moveVelocity = relativeMoveDirection * speed;
+
+    //    _gravityVelocity = GetGravityVelocity(_isGrounded);
+    //    _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityVelocity) * Time.deltaTime);
+
+    //    if (input != Vector2.zero)
+    //    {
+    //        _gravityController.MoveFloorDetector(relativeMoveDirection);
+    //        IsMoving = input != Vector2.zero;
+    //    }
+
+
+
+
+    //    return;
+    //    Vector3 GetGravityVelocity(bool isGrounded)
+    //    {
+    //        if (!isGrounded)
+    //            return _gravityVelocity += GravityDirection * Time.deltaTime;
+    //        else
+    //            return _gravityVelocity = Vector3.zero;
+    //    }
+    //}
 }

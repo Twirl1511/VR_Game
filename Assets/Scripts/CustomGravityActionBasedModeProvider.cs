@@ -133,14 +133,6 @@ public class CustomGravityActionBasedModeProvider : ContinuousMoveProviderBase
 
     protected override void MoveRig(Vector3 translationInWorldSpace)
     {
-        return;
-
-
-
-
-
-
-
         var xrOrigin = system.xrOrigin?.Origin;
         if (xrOrigin == null)
             return;

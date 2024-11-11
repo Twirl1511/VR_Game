@@ -323,6 +323,7 @@ GameObject:
   - component: {fileID: 7804501730751675086}
   - component: {fileID: 733196353281262279}
   - component: {fileID: 5651157305954466601}
+  - component: {fileID: 6636877693762897311}
   m_Layer: 7
   m_Name: Right Controller
   m_TagString: Untagged
@@ -683,6 +684,18 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.05
   m_Center: {x: 0, y: 0, z: 0.56}
+--- !u!114 &6636877693762897311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865340502506534355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e5cf99d0580cae4f926a303cf6fc86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1939220189058973810
 GameObject:
   m_ObjectHideFlags: 0
@@ -726,6 +739,7 @@ GameObject:
   - component: {fileID: 6488932192682368654}
   - component: {fileID: 5538156467102172985}
   - component: {fileID: 6097332964568676789}
+  - component: {fileID: 885622557028640388}
   m_Layer: 7
   m_Name: Left Controller
   m_TagString: Untagged
@@ -1086,6 +1100,18 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.15
   m_Center: {x: 0, y: 0, z: 0.5}
+--- !u!114 &885622557028640388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2558202971173601806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e5cf99d0580cae4f926a303cf6fc86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4289401500592541315
 GameObject:
   m_ObjectHideFlags: 0
@@ -1347,9 +1373,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 0
 --- !u!114 &5048732374416321872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1441,7 +1467,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4366149949617480204}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1624,7 +1650,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6813961631914334005}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
