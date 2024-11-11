@@ -10,6 +10,7 @@ public class CustomGravityCharacterController : MonoBehaviour
     [SerializeField] private float _checkGroundDistance = 1f;
     [SerializeField] private AnimationCurve _animationCurve;
 
+    public bool IsMoving { get; private set; }
     private Vector3 NormalDirection => _gravityController.NormalDirection;
     private Vector3 GravityDirection => _gravityController.GravityDirection;
 
@@ -25,6 +26,8 @@ public class CustomGravityCharacterController : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody>();
         _rigidBody.useGravity = false;
         _rigidBody.isKinematic = false;
+        CheckGround();
+        Move(Vector2.up, _moveSpeed);
     }
     private void FixedUpdate()
     {
@@ -68,6 +71,37 @@ public class CustomGravityCharacterController : MonoBehaviour
 
         if(input != Vector2.zero)
             _gravityController.MoveFloorDetector(relativeMoveDirection);
+
+
+
+
+        return;
+        Vector3 GetGravityVelocity(bool isGrounded)
+        {
+            if (!isGrounded)
+                return _gravityVelocity += GravityDirection * Time.deltaTime;
+            else
+                return _gravityVelocity = Vector3.zero;
+        }
+    }
+
+    public void Move(Vector2 input, float speed)
+    {
+        Vector3 cameraForward = Vector3.ProjectOnPlane(_camera.forward, NormalDirection).normalized;
+        Vector3 cameraRight = Vector3.ProjectOnPlane(_camera.right, NormalDirection).normalized;
+
+        Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y).normalized;
+        Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection).normalized;
+        Vector3 moveVelocity = relativeMoveDirection * speed;
+
+        _gravityVelocity = GetGravityVelocity(_isGrounded);
+        _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityVelocity) * Time.deltaTime);
+
+        if (input != Vector2.zero)
+        {
+            _gravityController.MoveFloorDetector(relativeMoveDirection);
+            IsMoving = input != Vector2.zero;
+        }
 
 
 

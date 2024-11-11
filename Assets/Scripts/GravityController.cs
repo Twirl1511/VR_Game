@@ -32,7 +32,7 @@ public class GravityController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_isReadyToChangeGravity)
+        if (_isReadyToChangeGravity && _customGravityCharacterController.IsMoving)
             CheckGravityDirection();
         else
             _isReadyToChangeGravity = IsReadyToChangeGravity();
