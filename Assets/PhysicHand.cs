@@ -16,8 +16,9 @@ public class PhysicsHand : MonoBehaviour
 
     [Space]
     [Header("Springs")]
-    [SerializeField] private float _climbForce = 1000f;
-    [SerializeField] private float _climbDrag = 500f;
+    [SerializeField] private float _climbForce = 1500f;
+    [SerializeField] private float _climbDrag = 1f;
+    [SerializeField] private float _squareMagnitudeAllowJump = 50f;
 
     private Vector3 _previousPosition;
     private bool _isColliding;
@@ -30,36 +31,36 @@ public class PhysicsHand : MonoBehaviour
         _selfRigidbody.maxAngularVelocity = float.PositiveInfinity;
         _previousPosition = transform.position;
 
-        _buttonAction.action.performed += Action_performed;
-        _buttonAction.action.canceled += Action_canceled;
-    }
-
-    private void Action_canceled(InputAction.CallbackContext obj)
-    {
-        _canJump = false;
-    }
-
-    private void Action_performed(InputAction.CallbackContext obj)
-    {
-        _canJump = true;
+        _buttonAction.action.performed += EnableJump;
+        _buttonAction.action.canceled += DisableJump;
     }
 
     private void OnDisable()
     {
-        _buttonAction.action.performed -= Action_performed;
-        _buttonAction.action.canceled -= Action_canceled;
+        _buttonAction.action.performed -= EnableJump;
+        _buttonAction.action.canceled -= DisableJump;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         PIDMovement();
         PIDRotation();
 
-        if (_isColliding && _canJump) 
+        if (_isColliding && _canJump && CanCalculate()) 
             HookesLaw();
     }
 
-    void PIDMovement()
+    private void DisableJump(InputAction.CallbackContext obj)
+    {
+        _canJump = false;
+    }
+
+    private void EnableJump(InputAction.CallbackContext obj)
+    {
+        _canJump = true;
+    }
+
+    private void PIDMovement()
     {
         float kp = (6f * _frequency) * (6f * _frequency) * 0.25f;
         float kd = 4.5f * _frequency * _damping;
@@ -70,7 +71,7 @@ public class PhysicsHand : MonoBehaviour
         _selfRigidbody.AddForce(force, ForceMode.Acceleration);
     }
 
-    void PIDRotation()
+    private void PIDRotation()
     {
         float kp = (6f * _rotFrequency) * (6f * _rotFrequency) * 0.25f;
         float kd = 4.5f * _rotFrequency * _rotDamping;
@@ -92,7 +93,7 @@ public class PhysicsHand : MonoBehaviour
         _selfRigidbody.AddTorque(torque, ForceMode.Acceleration);
     }
 
-    void HookesLaw()
+    private void HookesLaw()
     {
         Vector3 displacementFromResting = transform.position - _target.position;
         Vector3 force = displacementFromResting * _climbForce;
@@ -102,7 +103,7 @@ public class PhysicsHand : MonoBehaviour
         _playerRigidbody.AddForce(drag * -_playerRigidbody.velocity * _climbDrag, ForceMode.Acceleration);
     }
 
-    float GetDrag()
+    private float GetDrag()
     {
         Vector3 handVelocity = (_target.localPosition - _previousPosition) / Time.fixedDeltaTime;
         float drag = 1 / handVelocity.magnitude + 0.01f;
@@ -112,12 +113,17 @@ public class PhysicsHand : MonoBehaviour
         return drag;
     }
 
-    void OnCollisionEnter(Collision collision)
+    private bool CanCalculate()
+    {
+        return _selfRigidbody.velocity.sqrMagnitude > _squareMagnitudeAllowJump;
+    }
+
+    private void OnCollisionEnter(Collision collision)
     {
         _isColliding = true;
     }
 
-    void OnCollisionExit(Collision other)
+    private void OnCollisionExit(Collision other)
     {
         _isColliding = false;
     }

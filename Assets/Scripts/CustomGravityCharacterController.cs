@@ -4,7 +4,8 @@ using UnityEngine;
 public class CustomGravityCharacterController : MonoBehaviour
 {
     [SerializeField] private GravityController _gravityController;
-    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _moveSpeed = 4f;
+    [SerializeField] private float _speedDebuff = 0.5f;
     [SerializeField] private float _changeAlignmentSpeed = 0.1f;
     [SerializeField] private Transform _camera;
     [SerializeField] private float _checkGroundDistance = 1f;
@@ -12,7 +13,6 @@ public class CustomGravityCharacterController : MonoBehaviour
 
     public bool IsMoving { get; private set; }
     private Vector3 NormalDirection => _gravityController.NormalDirection;
-    private Vector3 GravityDirection => _gravityController.GravityDirection;
 
     private Rigidbody _rigidBody;
     private Vector3 _gravityVelocity;
@@ -34,27 +34,14 @@ public class CustomGravityCharacterController : MonoBehaviour
         SurfaceAlignment();
     }
 
-    private bool GetIsGround()
+    //private bool GetIsGround()
+    //{
+    //    return Physics.Raycast(transform.position, -transform.up, out _, _checkGroundDistance);
+    //}
+
+    private float GetSpeed()
     {
-        return Physics.Raycast(transform.position, -transform.up, out _, _checkGroundDistance);
-    }
-
-    private void GetIsGround11111()
-    {
-        Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, float.MaxValue);
-        float distance = Vector3.Distance(transform.position, hit.point);
-        if(distance <= _checkGroundDistance)
-        {
-
-        }
-        else if (distance > _checkGroundDistance && distance < 2)
-        {
-
-        }
-        else if(distance > 2)
-        {
-
-        }
+        return _gravityController.CanChangeGravity ? _moveSpeed : _moveSpeed * _speedDebuff;
     }
 
     private void SurfaceAlignment()
@@ -77,58 +64,58 @@ public class CustomGravityCharacterController : MonoBehaviour
 
         Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y).normalized;
         Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection).normalized;
-        Vector3 moveVelocity = relativeMoveDirection * _moveSpeed;
+        Vector3 moveVelocity = relativeMoveDirection * GetSpeed();
 
-        _gravityVelocity = GetGravityVelocity(_isGrounded);
-        _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityVelocity) * Time.deltaTime);
+        //_gravityVelocity = GetGravityVelocity(_isGrounded);
+        _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityController.GravityVelocity) * Time.deltaTime);
 
         if (input != Vector2.zero)
         {
-            _gravityController.MoveFloorDetector(relativeMoveDirection);
+            _gravityController.MoveSurfaceDetector(relativeMoveDirection);
             IsMoving = input != Vector2.zero;
         }
 
 
 
 
-        return;
-        Vector3 GetGravityVelocity(bool isGrounded)
-        {
-            Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, float.MaxValue);
-            float distance = Vector3.Distance(transform.position, hit.point);
+        //return;
+        //Vector3 GetGravityVelocity(bool isGrounded)
+        //{
+        //    Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, float.MaxValue);
+        //    float distance = Vector3.Distance(transform.position, hit.point);
 
-            if (distance <= _checkGroundDistance)
-            {
-                return _gravityVelocity = Vector3.zero;
-            }
-            else if (distance > _checkGroundDistance && distance < 2)
-            {
-                return _gravityVelocity += GravityDirection * Time.deltaTime;
-            }
-            else if (distance > 2)
-            {
-                return _gravityVelocity += Vector3.down * 9.81f * Time.deltaTime;
-            }
+        //    if (distance <= _checkGroundDistance)
+        //    {
+        //        return _gravityVelocity = Vector3.zero;
+        //    }
+        //    else if (distance > _checkGroundDistance && distance < 2)
+        //    {
+        //        return _gravityVelocity += GravityDirection * Time.deltaTime;
+        //    }
+        //    else if (distance > 2)
+        //    {
+        //        return _gravityVelocity += Vector3.down * 9.81f * Time.deltaTime;
+        //    }
 
-            /// когда понимаем что гравитация вниз, то всегда поворачиваем в сторону нормали вверх
-            /// походу это все надо переносить в гравити контроллер
-            /// 
-            /// 
-            /// 
-            /// еще надо придумать как залезать по стене на крышу!!!!!!!!!!!!!!!!!!!!!!!!
-            /// 
+        //    /// когда понимаем что гравитация вниз, то всегда поворачиваем в сторону нормали вверх
+        //    /// походу это все надо переносить в гравити контроллер
+        //    /// 
+        //    /// 
+        //    /// 
+        //    /// еще надо придумать как залезать по стене на крышу!!!!!!!!!!!!!!!!!!!!!!!!
+        //    /// 
 
-            /// придумать сглаживание для прыжка, чтобы плеера не колбасило
+        //    /// придумать сглаживание для прыжка, чтобы плеера не колбасило
 
-            print("ERROR!!!!!!!!!!!!!!!!!!");
-            return _gravityVelocity = Vector3.zero;
+        //    print("ERROR!!!!!!!!!!!!!!!!!!");
+        //    return _gravityVelocity = Vector3.zero;
 
 
-            //if (isGrounded)
-            //    return _gravityVelocity = Vector3.zero;
-            //else
-            //    return _gravityVelocity += GravityDirection * Time.deltaTime;
-        }
+        //    //if (isGrounded)
+        //    //    return _gravityVelocity = Vector3.zero;
+        //    //else
+        //    //    return _gravityVelocity += GravityDirection * Time.deltaTime;
+        //}
     }
 
     //public void Move(Vector2 input, float speed)

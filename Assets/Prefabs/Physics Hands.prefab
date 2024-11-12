@@ -165,7 +165,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5469458793973424923}
   serializedVersion: 4
-  m_Mass: 3
+  m_Mass: 10
   m_Drag: 1
   m_AngularDrag: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -204,8 +204,10 @@ MonoBehaviour:
   _target: {fileID: 0}
   _selfRigidbody: {fileID: 4123905026466114861}
   _buttonAction: {fileID: -6131295136447488360, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  _climbForce: 1000
-  _climbDrag: 500
+  _climbForce: 1500
+  _climbDrag: 1
+  _squareMagnitudeAllowJump: 50
+  _squareMagnitudeAllowJumpTEST: 0
 --- !u!1 &5692821350756837011
 GameObject:
   m_ObjectHideFlags: 0
@@ -321,7 +323,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5692821350756837011}
   serializedVersion: 4
-  m_Mass: 3
+  m_Mass: 10
   m_Drag: 1
   m_AngularDrag: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -360,5 +362,7 @@ MonoBehaviour:
   _target: {fileID: 0}
   _selfRigidbody: {fileID: 1461187064101068927}
   _buttonAction: {fileID: 187161793506945269, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  _climbForce: 1000
-  _climbDrag: 500
+  _climbForce: 1500
+  _climbDrag: 1
+  _squareMagnitudeAllowJump: 50
+  _squareMagnitudeAllowJumpTEST: 0
