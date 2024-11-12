@@ -50,6 +50,19 @@ public class PhysicsHand : MonoBehaviour
             HookesLaw();
     }
 
+    private void HookesLaw()
+    {
+        Vector3 displacementFromResting = transform.position - _target.position;
+        Vector3 force = displacementFromResting * _climbForce;
+        float drag = GetDrag();
+
+        Vector3 adjustedForce = Quaternion.LookRotation(Camera.main.transform.forward) * force;
+        _playerRigidbody.AddForce(adjustedForce, ForceMode.Acceleration);
+        //_playerRigidbody.AddForce(force, ForceMode.Acceleration); 
+        /// потестить заввтра как это будет работать!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        _playerRigidbody.AddForce(drag * -_playerRigidbody.velocity * _climbDrag, ForceMode.Acceleration);
+    }
+
     private void DisableJump(InputAction.CallbackContext obj)
     {
         _canJump = false;
@@ -91,16 +104,6 @@ public class PhysicsHand : MonoBehaviour
         axis *= Mathf.Deg2Rad;
         Vector3 torque = ksg * axis * angle + -_selfRigidbody.angularVelocity * kdg;
         _selfRigidbody.AddTorque(torque, ForceMode.Acceleration);
-    }
-
-    private void HookesLaw()
-    {
-        Vector3 displacementFromResting = transform.position - _target.position;
-        Vector3 force = displacementFromResting * _climbForce;
-        float drag = GetDrag();
-
-        _playerRigidbody.AddForce(force, ForceMode.Acceleration);
-        _playerRigidbody.AddForce(drag * -_playerRigidbody.velocity * _climbDrag, ForceMode.Acceleration);
     }
 
     private float GetDrag()

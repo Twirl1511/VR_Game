@@ -103,6 +103,7 @@ public class GravityController : MonoBehaviour
         }
         else if (distanceToSurface > _checkFallDistance )
         {
+            // TODO: rewrite!!!!!!!!!!!!!
             if (CanChangeGravity)
             {
                 ResetGravity();
