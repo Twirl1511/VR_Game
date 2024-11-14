@@ -202,12 +202,10 @@ MonoBehaviour:
   _rotDamping: 0.9
   _playerRigidbody: {fileID: 0}
   _target: {fileID: 0}
-  _selfRigidbody: {fileID: 4123905026466114861}
+  _squareMagnitudeMaxDistance: 0.2
   _buttonAction: {fileID: -6131295136447488360, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  _climbForce: 1500
-  _climbDrag: 1
+  _climbForce: 1000
   _squareMagnitudeAllowJump: 50
-  _squareMagnitudeAllowJumpTEST: 0
 --- !u!1 &5692821350756837011
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,9 +358,7 @@ MonoBehaviour:
   _rotDamping: 0.9
   _playerRigidbody: {fileID: 0}
   _target: {fileID: 0}
-  _selfRigidbody: {fileID: 1461187064101068927}
+  _squareMagnitudeMaxDistance: 0.2
   _buttonAction: {fileID: 187161793506945269, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  _climbForce: 1500
-  _climbDrag: 1
+  _climbForce: 1000
   _squareMagnitudeAllowJump: 50
-  _squareMagnitudeAllowJumpTEST: 0

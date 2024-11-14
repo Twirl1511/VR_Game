@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,8 +26,11 @@ public class PhysicsHand : MonoBehaviour
     private Collider _selfCollider;
     private Vector3 _previousPosition;
     private bool _isColliding;
-    private bool _canJump;
+    private bool _isJumpButtonHeld;
     private bool _isInPropperPosition;
+    private bool _isJumping;
+
+    public event Action OnJump;
 
     void Start()
     {
@@ -52,7 +56,7 @@ public class PhysicsHand : MonoBehaviour
         PIDMovement();
         PIDRotation();
 
-        if (_isColliding && _canJump && CanCalculate()) 
+        if (_isColliding && _isJumpButtonHeld && IsVelocityEnoughForJump()) 
             HookesLaw();
     }
 
@@ -75,23 +79,25 @@ public class PhysicsHand : MonoBehaviour
     private void HookesLaw()
     {
         Vector3 displacementFromResting = transform.position - _target.position;
-        //Vector3 force = displacementFromResting * _climbForce;
+        Vector3 force = displacementFromResting * _climbForce;
         //float drag = GetDrag();
 
         //Vector3 adjustedForce = Quaternion.FromToRotation(force.normalized, Camera.main.transform.forward) * force;
         //_playerRigidbody.AddForce(adjustedForce, ForceMode.Acceleration);
-        _playerRigidbody.AddForce(displacementFromResting, ForceMode.Acceleration);
+        _playerRigidbody.AddForce(force, ForceMode.Acceleration);
         //_playerRigidbody.AddForce(drag * -_playerRigidbody.velocity * _climbDrag, ForceMode.Acceleration);
+
+        OnJump?.Invoke();
     }
 
     private void DisableJump(InputAction.CallbackContext obj)
     {
-        _canJump = false;
+        _isJumpButtonHeld = false;
     }
 
     private void EnableJump(InputAction.CallbackContext obj)
     {
-        _canJump = true;
+        _isJumpButtonHeld = true;
     }
 
     private void PIDMovement()
@@ -137,7 +143,7 @@ public class PhysicsHand : MonoBehaviour
         return drag;
     }
 
-    private bool CanCalculate()
+    private bool IsVelocityEnoughForJump()
     {
         return _selfRigidbody.velocity.sqrMagnitude > _squareMagnitudeAllowJump;
     }

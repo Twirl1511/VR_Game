@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class PhysicsHandsController : MonoBehaviour
@@ -7,18 +6,26 @@ public class PhysicsHandsController : MonoBehaviour
     [SerializeField] private PhysicsHand[] _physicsHands;
     [SerializeField] private CustomGravityCharacterController _customGravityCharacterController;
 
-    //private void FixedUpdate()
-    //{
-    //    bool isCollision = false;
-    //    for (int i = 0; i < _physicsHands.Length; i++)
-    //    {
-    //        if (!_physicsHands[i].IsCollision)
-    //            continue;
+    public event Action OnJump;
 
-    //        isCollision = true;
-    //    }
+    private void Start()
+    {
+        for (int i = 0; i < _physicsHands.Length; i++)
+        {
+            _physicsHands[i].OnJump += ActivateJump;
+        }
+    }
 
-    //    if (!isCollision)
-    //        _customGravityCharacterController.Move(Vector2.zero, 0f);
-    //}
+    private void OnDisable()
+    {
+        for (int i = 0; i < _physicsHands.Length; i++)
+        {
+            _physicsHands[i].OnJump -= ActivateJump;
+        }
+    }
+
+    private void ActivateJump()
+    {
+        OnJump?.Invoke();
+    }
 }
