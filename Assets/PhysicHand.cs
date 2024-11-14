@@ -10,24 +10,29 @@ public class PhysicsHand : MonoBehaviour
     [SerializeField] private float _rotDamping = 0.9f;
     [SerializeField] private Rigidbody _playerRigidbody;
     [SerializeField] private Transform _target;
-    [SerializeField] private Rigidbody _selfRigidbody;
+    [SerializeField] private float _squareMagnitudeMaxDistance = 10f;
 
     [SerializeField] private InputActionReference _buttonAction;
 
     [Space]
     [Header("Springs")]
-    [SerializeField] private float _climbForce = 1500f;
-    [SerializeField] private float _climbDrag = 1f;
+    [SerializeField] private float _climbForce = 1000f;
+    //[SerializeField] private float _climbDrag = 1f;
+    //[SerializeField] private float _maxJumpForce = 5f;
     [SerializeField] private float _squareMagnitudeAllowJump = 50f;
 
+    private Rigidbody _selfRigidbody;
+    private Collider _selfCollider;
     private Vector3 _previousPosition;
     private bool _isColliding;
     private bool _canJump;
+    private bool _isInPropperPosition;
 
     void Start()
     {
         transform.SetPositionAndRotation(_target.position, _target.rotation);
         _selfRigidbody = GetComponent<Rigidbody>();
+        _selfCollider = GetComponent<Collider>();
         _selfRigidbody.maxAngularVelocity = float.PositiveInfinity;
         _previousPosition = transform.position;
 
@@ -43,6 +48,7 @@ public class PhysicsHand : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //ReturnCollider();
         PIDMovement();
         PIDRotation();
 
@@ -50,17 +56,32 @@ public class PhysicsHand : MonoBehaviour
             HookesLaw();
     }
 
+    private void ReturnCollider()
+    {
+        float distance = (transform.position - _target.position).sqrMagnitude;
+
+        if(distance > _squareMagnitudeMaxDistance)
+        {
+            _selfCollider.isTrigger = true;
+            _isInPropperPosition = false;
+        }
+        else
+        {
+            _selfCollider.isTrigger = false;
+            _isInPropperPosition = true;
+        }
+    }
+
     private void HookesLaw()
     {
         Vector3 displacementFromResting = transform.position - _target.position;
-        Vector3 force = displacementFromResting * _climbForce;
-        float drag = GetDrag();
+        //Vector3 force = displacementFromResting * _climbForce;
+        //float drag = GetDrag();
 
-        Vector3 adjustedForce = Quaternion.LookRotation(Camera.main.transform.forward) * force;
-        _playerRigidbody.AddForce(adjustedForce, ForceMode.Acceleration);
-        //_playerRigidbody.AddForce(force, ForceMode.Acceleration); 
-        /// потестить заввтра как это будет работать!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        _playerRigidbody.AddForce(drag * -_playerRigidbody.velocity * _climbDrag, ForceMode.Acceleration);
+        //Vector3 adjustedForce = Quaternion.FromToRotation(force.normalized, Camera.main.transform.forward) * force;
+        //_playerRigidbody.AddForce(adjustedForce, ForceMode.Acceleration);
+        _playerRigidbody.AddForce(displacementFromResting, ForceMode.Acceleration);
+        //_playerRigidbody.AddForce(drag * -_playerRigidbody.velocity * _climbDrag, ForceMode.Acceleration);
     }
 
     private void DisableJump(InputAction.CallbackContext obj)
