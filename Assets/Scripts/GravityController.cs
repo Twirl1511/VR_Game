@@ -7,6 +7,7 @@ public class GravityController : MonoBehaviour
     [SerializeField] private CustomGravityActionBasedModeProvider gravityProvider;
     [SerializeField] private PhysicsHandsController _physicsHandsController;
     [SerializeField] private float _distanceToSurface = 0.5f;
+    [SerializeField] private float _distanceToSurfaceDuringJump = 1.5f;
     [SerializeField] private float _radiusSurfaceDetector = 1f;
     [SerializeField] private Transform _surfaceDetector;
     [SerializeField] private LayerMask _groundLayer;
@@ -31,7 +32,6 @@ public class GravityController : MonoBehaviour
     public Vector3 GravityDirection { get; private set; }
     public Vector3 DefaultGravityDirection { get; private set; }
     public Vector3 GravityVelocity { get; private set; }
-    public bool IsJumping { get; private set; }
     public bool CanChangeGravity { get; private set; }
     public bool IsGround { get; private set; }
 
@@ -132,6 +132,8 @@ public class GravityController : MonoBehaviour
     private void StartJumping()
     {
         _isJumping = true;
+        CanChangeGravity = false;
+        _changeGravityTimer = 0;
         StartTransition();
     }
 
@@ -139,6 +141,9 @@ public class GravityController : MonoBehaviour
     {
         GravityDirection = DefaultGravityDirection;
         NormalDirection = Vector3.up;
+        CanChangeGravity = false;
+        _isJumping = false;
+        _changeGravityTimer = 0;
     }
 
     private void CheckGravityDirection()
@@ -164,8 +169,9 @@ public class GravityController : MonoBehaviour
         if (hitCount == 0)
             return;
 
+        _isJumping = false;
         Vector3 direction = (_collidersForJumpCheck[0].ClosestPoint(transform.position) - transform.position).normalized;
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hitInfo, float.MaxValue, _groundLayer))
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hitInfo, _distanceToSurfaceDuringJump, _groundLayer))
         {
             GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
             NormalDirection = Vector3.Normalize(hitInfo.normal);

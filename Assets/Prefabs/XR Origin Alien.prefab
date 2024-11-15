@@ -1131,6 +1131,7 @@ GameObject:
   - component: {fileID: 3779437935231804940}
   - component: {fileID: 369637353395565054}
   - component: {fileID: 5048732374416321872}
+  - component: {fileID: 4989187608504605856}
   m_Layer: 7
   m_Name: XR Origin Alien
   m_TagString: Untagged
@@ -1278,6 +1279,7 @@ MonoBehaviour:
   gravityProvider: {fileID: 4461198965489796854}
   _physicsHandsController: {fileID: 0}
   _distanceToSurface: 0.5
+  _distanceToSurfaceDuringJump: 1.5
   _radiusSurfaceDetector: 1
   _surfaceDetector: {fileID: 1269219436207382210}
   _groundLayer:
@@ -1285,11 +1287,11 @@ MonoBehaviour:
     m_Bits: 256
   _center: {fileID: 8826086263965849707}
   _gravityForce: 9.81
-  _gravityChangeDelay: 0.6
+  _gravityChangeDelay: 0.2
   _checkGroundDistance: 1
-  _checkFallDistance: 2
+  _checkFallDistance: 1.8
   _rigidbody: {fileID: 369637353395565054}
-  _jumpDurationTransition: 1
+  _jumpDurationTransition: 2
   _curve:
     serializedVersion: 2
     m_Curve:
@@ -1323,7 +1325,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _radiusOverlapSphere: 2
+  _radiusOverlapSphere: 1.5
+  _jump: {fileID: 4989187608504605856}
 --- !u!114 &8416570971092969837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1338,7 +1341,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gravityController: {fileID: 4967434511042574812}
   _moveSpeed: 4
-  _speedDebuff: 0.5
+  _speedDebuff: 0.75
   _changeAlignmentSpeed: 0.15
   _camera: {fileID: 384231932440844912}
   _checkGroundDistance: 1.8
@@ -1382,7 +1385,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4289401500592541315}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 93fd3ce14e8045645a179db0bfce7ea9, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1467,6 +1470,21 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: -6493913391331992944, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+--- !u!114 &4989187608504605856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4289401500592541315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ec97a0835b860d4b9a9c884409714c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gravityController: {fileID: 4967434511042574812}
+  _jumpButton: {fileID: -2756807894847494276, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  _force: 2000
 --- !u!1 &4366149949617480204
 GameObject:
   m_ObjectHideFlags: 0
