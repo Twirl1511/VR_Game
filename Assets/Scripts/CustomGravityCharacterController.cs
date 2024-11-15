@@ -53,8 +53,10 @@ public class CustomGravityCharacterController : MonoBehaviour
         Vector3 cameraForward = Vector3.ProjectOnPlane(_camera.forward, NormalDirection).normalized;
         Vector3 cameraRight = Vector3.ProjectOnPlane(_camera.right, NormalDirection).normalized;
 
-        Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y).normalized;
-        Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection).normalized;
+        Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y);
+        Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection);
+        //Vector3 moveDirection = (cameraRight * input.x + cameraForward * input.y).normalized;
+        //Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection).normalized;
         Vector3 moveVelocity = relativeMoveDirection * GetSpeed();
 
         _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityController.GravityVelocity) * Time.deltaTime);

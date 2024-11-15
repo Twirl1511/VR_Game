@@ -24,6 +24,7 @@ public class GravityController : MonoBehaviour
     [SerializeField] private float _jumpDurationTransition = 1.0f;
     [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
     [SerializeField] private float _radiusOverlapSphere = 1.5f;
+    [SerializeField] private Jump _jump;
 
 
     public Vector3 NormalDirection { get; private set; }
@@ -32,6 +33,7 @@ public class GravityController : MonoBehaviour
     public Vector3 GravityVelocity { get; private set; }
     public bool IsJumping { get; private set; }
     public bool CanChangeGravity { get; private set; }
+    public bool IsGround { get; private set; }
 
 
     private bool _isJumping;
@@ -51,14 +53,16 @@ public class GravityController : MonoBehaviour
         DefaultGravityDirection = Vector3.down * _gravityForce;
 
         _physicsHandsController.OnJump += StartJumping;
+        _jump.OnJump += StartJumping;
 
         CanChangeGravity = true;
         ResetGravity();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         _physicsHandsController.OnJump -= StartJumping;
+        _jump.OnJump -= StartJumping;
     }
 
     private void FixedUpdate()
@@ -189,13 +193,16 @@ public class GravityController : MonoBehaviour
         if (distanceToSurface <= _checkGroundDistance)
         {
             GravityVelocity = Vector3.zero;
+            IsGround = true;
         }
         else if (distanceToSurface > _checkGroundDistance && distanceToSurface < _checkFallDistance)
         {
             GravityVelocity += GravityDirection * Time.deltaTime;
+            IsGround = false;
         }
         else if (distanceToSurface > _checkFallDistance)
         {
+            IsGround = false;
             if (_isJumping)
             {
                 GravityVelocity += GravityDirection * Time.deltaTime;
