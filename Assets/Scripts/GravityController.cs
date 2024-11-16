@@ -3,60 +3,59 @@ using UnityEngine;
 
 public class GravityController : MonoBehaviour
 {
+    private const float GRAVITY_FORCE = 9.81f;
+
+
     [SerializeField] private CustomGravityCharacterController _customGravityCharacterController;
     [SerializeField] private CustomGravityActionBasedModeProvider gravityProvider;
     [SerializeField] private PhysicsHandsController _physicsHandsController;
-    [SerializeField] private float _distanceToSurface = 0.5f;
-    [SerializeField] private float _distanceToSurfaceDuringJump = 1.5f;
+    [SerializeField] private float _distanceToCheckNewSurface = 1.5f;
     [SerializeField] private float _radiusSurfaceDetector = 1f;
     [SerializeField] private Transform _surfaceDetector;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private Transform _center;                  
-    [SerializeField] private float _gravityForce = 9.81f;
-    [SerializeField] private float _gravityChangeDelay = 0.8f;
+    [SerializeField] private float _gravityChangeDelay = 0.2f;
 
+    [Header("Ground and Fall distance")]
     [Space]
     [SerializeField] private float _checkGroundDistance = 1f;
-    [SerializeField] private float _checkFallDistance = 2f;
-    [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private float _checkFallDistance = 1.8f;
+    
 
     [Header("Jump")]
     [Space]
-    [SerializeField] private float _jumpDurationTransition = 1.0f;
+    [SerializeField] private float _jumpDurationTransition = 2.0f;
     [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
-    [SerializeField] private float _radiusOverlapSphere = 1.5f;
     [SerializeField] private Jump _jump;
 
 
     public Vector3 NormalDirection { get; private set; }
-    public Vector3 GravityDirection { get; private set; }
-    public Vector3 DefaultGravityDirection { get; private set; }
     public Vector3 GravityVelocity { get; private set; }
     public bool CanChangeGravity { get; private set; }
     public bool IsGround { get; private set; }
 
 
     private bool _isJumping;
+    private bool _isTransitioning;
     private float _changeGravityTimer;
     private float _elapsedTime;
-    private bool _isTransitioning;
+    private Vector3 _gravityDirection;
+    private Vector3 _defaultGravityDirection;
     private Collider[] _collidersForJumpCheck = new Collider[1];
 
 
-    public event Action OnChangeFloor;
+    public event Action OnChangeSurface;
 
 
 
 
     private void Start()
     {
-        DefaultGravityDirection = Vector3.down * _gravityForce;
+        _defaultGravityDirection = Vector3.down * GRAVITY_FORCE;
+        ResetGravityToDefault();
 
         _physicsHandsController.OnJump += StartJumping;
         _jump.OnJump += StartJumping;
-
-        CanChangeGravity = true;
-        ResetGravity();
     }
 
     private void OnDestroy()
@@ -67,10 +66,10 @@ public class GravityController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        TransitioningGravityDirection();
+        TransitioningGravityDirectionWhileJumping();
         UpdateGravityVelocity();
 
-        if(CanChangeGravity == false)
+        if(!CanChangeGravity)
             CanChangeGravity = IsReadyToChangeGravity();
 
 
@@ -100,7 +99,7 @@ public class GravityController : MonoBehaviour
         return true;
     }
 
-    private void TransitioningGravityDirection()
+    private void TransitioningGravityDirectionWhileJumping()
     {
         if(_isJumping == false)
         {
@@ -113,11 +112,13 @@ public class GravityController : MonoBehaviour
             _elapsedTime += Time.deltaTime;
             float progress = Mathf.Clamp01(_elapsedTime / _jumpDurationTransition);
             float curveValue = _curve.Evaluate(progress);
-            GravityDirection = Vector3.Lerp(GravityDirection, DefaultGravityDirection, curveValue);
+            _gravityDirection = Vector3.Lerp(_gravityDirection, _defaultGravityDirection, curveValue);
 
-            if (progress >= 1.0f)
+            if (progress >= 1.0f) /// 100%
             {
-                ResetGravity();
+                _gravityDirection = _defaultGravityDirection;
+                NormalDirection = Vector3.up;
+                _changeGravityTimer = 0;
                 _isTransitioning = false; 
             }
         }
@@ -131,18 +132,17 @@ public class GravityController : MonoBehaviour
 
     private void StartJumping()
     {
-        _isJumping = true;
+        SetIsJumping(true);
         CanChangeGravity = false;
         _changeGravityTimer = 0;
         StartTransition();
     }
 
-    private void ResetGravity()
+    private void ResetGravityToDefault()
     {
-        GravityDirection = DefaultGravityDirection;
+        _gravityDirection = _defaultGravityDirection;
         NormalDirection = Vector3.up;
         CanChangeGravity = false;
-        _isJumping = false;
         _changeGravityTimer = 0;
     }
 
@@ -151,36 +151,43 @@ public class GravityController : MonoBehaviour
         Vector3 direction = (_surfaceDetector.position - _center.position).normalized;
         Ray ray = new Ray(_center.position, direction);
 
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, _distanceToSurface + _radiusSurfaceDetector, _groundLayer))
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
         {
-            GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
-            NormalDirection = Vector3.Normalize(hitInfo.normal);
-
-            OnChangeFloor?.Invoke();
-            CanChangeGravity = false;
-            _isJumping = false;
+            SetNewSurface(hitInfo);
         }
     }
 
     private void CheckGravityDirectionWithSphereCast()
     {
-        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, _radiusOverlapSphere, _collidersForJumpCheck, _groundLayer);
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, _distanceToCheckNewSurface, _collidersForJumpCheck, _groundLayer);
 
         if (hitCount == 0)
             return;
 
-        _isJumping = false;
+        SetIsJumping(false); /// вообще это лишнее, так как игрок должен приклеиться к поверхности
         Vector3 direction = (_collidersForJumpCheck[0].ClosestPoint(transform.position) - transform.position).normalized;
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hitInfo, _distanceToSurfaceDuringJump, _groundLayer))
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
         {
-            GravityDirection = Vector3.Normalize(-hitInfo.normal) * _gravityForce;
-            NormalDirection = Vector3.Normalize(hitInfo.normal);
-
-            OnChangeFloor?.Invoke();
-            CanChangeGravity = false;
-            _isJumping = false;
+            SetNewSurface(hitInfo);
         }
     }
+
+    private void SetNewSurface(RaycastHit hitInfo)
+    {
+        _gravityDirection = Vector3.Normalize(-hitInfo.normal) * GRAVITY_FORCE;
+        NormalDirection = Vector3.Normalize(hitInfo.normal);
+
+        CanChangeGravity = false;
+        SetIsJumping(false);
+
+        OnChangeSurface?.Invoke();
+    }
+
+    private void SetIsJumping(bool value)
+    {
+        _isJumping = value;
+    }
+
 
     
 
@@ -192,40 +199,48 @@ public class GravityController : MonoBehaviour
 
     public void UpdateGravityVelocity()
     {
-        Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, float.MaxValue);
+        Physics.Raycast(transform.position, -transform.up, out RaycastHit hitInfo, float.MaxValue);
         // TODO: rewrite to squaremagnitude
-        float distanceToSurface = Vector3.Distance(transform.position, hit.point);
+        float distanceToSurface = Vector3.Distance(transform.position, hitInfo.point);
 
-        if (distanceToSurface <= _checkGroundDistance)
+        if (IsOnSurface())
         {
-            GravityVelocity = Vector3.zero;
             IsGround = true;
+            GravityVelocity = Vector3.zero;
         }
-        else if (distanceToSurface > _checkGroundDistance && distanceToSurface < _checkFallDistance)
-        {
-            GravityVelocity += GravityDirection * Time.deltaTime;
-            IsGround = false;
-        }
-        else if (distanceToSurface > _checkFallDistance)
+        else if (IsNearSurface())
         {
             IsGround = false;
-            if (_isJumping)
+            GravityVelocity += _gravityDirection * Time.deltaTime;
+        }
+        else if(IsFalling())
+        {
+            IsGround = false;
+
+            // falling down
+            if (CanChangeGravity && !_isJumping)
             {
-                GravityVelocity += GravityDirection * Time.deltaTime;
+                ResetGravityToDefault();
             }
-            else
-            {
-                // TODO: rewrite!!!!!!!!!!!!!
-                if (CanChangeGravity)
-                {
-                    ResetGravity();
-                    GravityVelocity += GravityDirection * Time.deltaTime;
-                }
-                else
-                {
-                    GravityVelocity += GravityDirection * Time.deltaTime;
-                }
-            }
+
+            GravityVelocity += _gravityDirection * Time.deltaTime;
+        }
+
+
+
+
+        return;
+        bool IsOnSurface()
+        {
+            return distanceToSurface <= _checkGroundDistance;
+        }
+        bool IsNearSurface()
+        {
+            return distanceToSurface > _checkGroundDistance && distanceToSurface < _checkFallDistance;
+        }
+        bool IsFalling()
+        {
+            return distanceToSurface > _checkFallDistance;
         }
     }
 }

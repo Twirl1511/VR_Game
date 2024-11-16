@@ -1278,19 +1278,16 @@ MonoBehaviour:
   _customGravityCharacterController: {fileID: 8416570971092969837}
   gravityProvider: {fileID: 4461198965489796854}
   _physicsHandsController: {fileID: 0}
-  _distanceToSurface: 0.5
-  _distanceToSurfaceDuringJump: 1.5
+  _distanceToCheckNewSurface: 1.5
   _radiusSurfaceDetector: 1
   _surfaceDetector: {fileID: 1269219436207382210}
   _groundLayer:
     serializedVersion: 2
     m_Bits: 256
   _center: {fileID: 8826086263965849707}
-  _gravityForce: 9.81
   _gravityChangeDelay: 0.2
   _checkGroundDistance: 1
   _checkFallDistance: 1.8
-  _rigidbody: {fileID: 369637353395565054}
   _jumpDurationTransition: 2
   _curve:
     serializedVersion: 2
@@ -1325,7 +1322,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _radiusOverlapSphere: 1.5
   _jump: {fileID: 4989187608504605856}
 --- !u!114 &8416570971092969837
 MonoBehaviour:

@@ -37,12 +37,12 @@ public class CustomVignetteController : MonoBehaviour
         UpdateTunnelingVignette(_defaultParameters);
         _currentParameters.apertureSize = 1;
         _currentParameters.featheringEffect = 1;
-        _gravityController.OnChangeFloor += ActivateVignette;
+        _gravityController.OnChangeSurface += ActivateVignette;
     }
 
     private void OnDestroy()
     {
-        _gravityController.OnChangeFloor -= ActivateVignette;
+        _gravityController.OnChangeSurface -= ActivateVignette;
     }
 
     private void Update()
