@@ -2798,7 +2798,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.0960784
+      value: 9.108153
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2806,11 +2806,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.50782
+      value: -2.4892457
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.53557056
+      value: 0.03402637
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalRotation.x
@@ -2818,7 +2818,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.84449047
+      value: 0.99942094
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalRotation.z
@@ -2830,7 +2830,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 115.235
+      value: 176.1
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -2840,6 +2840,50 @@ PrefabInstance:
       propertyPath: _physicsHandsController
       value: 
       objectReference: {fileID: 1290185139}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].time
+      value: 0.39086077
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].value
+      value: 0.8401641
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].inSlope
+      value: 0.9168432
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[2].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[0].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].inWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].outSlope
+      value: 0.9168432
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[2].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

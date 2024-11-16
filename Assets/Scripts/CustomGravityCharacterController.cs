@@ -59,10 +59,10 @@ public class CustomGravityCharacterController : MonoBehaviour
 
         _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityController.GravityVelocity) * Time.deltaTime);
 
-        if (input != Vector2.zero)
+        IsMoving = input != Vector2.zero;
+        if (IsMoving)
         {
             _gravityController.MoveSurfaceDetector(relativeMoveDirection);
-            IsMoving = input != Vector2.zero;
         }
     }
 }

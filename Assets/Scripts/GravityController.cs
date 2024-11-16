@@ -11,8 +11,8 @@ public class GravityController : MonoBehaviour
     [SerializeField] private PhysicsHandsController _physicsHandsController;
     [SerializeField] private float _distanceToCheckNewSurface = 1.5f;
     [SerializeField] private float _radiusSurfaceDetector = 1f;
-    [SerializeField] private Transform _surfaceDetector;
     [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private Transform _surfaceDetector;
     [SerializeField] private Transform _center;                  
     [SerializeField] private float _gravityChangeDelay = 0.2f;
 
@@ -146,15 +146,51 @@ public class GravityController : MonoBehaviour
         _changeGravityTimer = 0;
     }
 
+    //private void CheckGravityDirection()
+    //{
+    //    Vector3 direction = (_surfaceDetector.position - _center.position).normalized;
+    //    Ray ray = new Ray(_center.position, direction);
+    //    Debug.DrawRay(_center.position, direction * _distanceToCheckNewSurface, Color.red);
+
+    //    if (Physics.Raycast(ray, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
+    //    {
+    //        SetNewSurface(hitInfo);
+    //    }
+    //}
+
     private void CheckGravityDirection()
     {
-        Vector3 direction = (_surfaceDetector.position - _center.position).normalized;
-        Ray ray = new Ray(_center.position, direction);
+        Vector3 currentOrigin = _center.position;
+        Vector3 currentDirection = (_surfaceDetector.position - _center.position).normalized; 
+        int maxRaycasts = 3; 
+        float angleOffset = 90f;
+        Quaternion rotation = Quaternion.AngleAxis(angleOffset, Vector3.Cross(currentDirection, -transform.up));
 
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
+        for (int i = 0; i < maxRaycasts; i++)
         {
-            SetNewSurface(hitInfo);
+            Ray ray = new Ray(currentOrigin, currentDirection);
+            Debug.DrawRay(currentOrigin, currentDirection * _distanceToCheckNewSurface, Color.red);
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
+            {
+                if(!IsTheSameVector(hitInfo.normal, NormalDirection, 0.1f))
+                {
+                    SetNewSurface(hitInfo); 
+                }
+
+                return;
+            }
+
+            currentOrigin += currentDirection * _distanceToCheckNewSurface;
+            currentDirection = rotation * currentDirection;
         }
+    }
+
+    private bool IsTheSameVector(Vector3 vector1, Vector3 vector2, float tolerance = 0.01f)
+    {
+        return Mathf.Abs(vector1.x - vector2.x) < tolerance &&
+               Mathf.Abs(vector1.y - vector2.y) < tolerance &&
+               Mathf.Abs(vector1.z - vector2.z) < tolerance;
     }
 
     private void CheckGravityDirectionWithSphereCast()
@@ -174,8 +210,8 @@ public class GravityController : MonoBehaviour
 
     private void SetNewSurface(RaycastHit hitInfo)
     {
-        _gravityDirection = Vector3.Normalize(-hitInfo.normal) * GRAVITY_FORCE;
-        NormalDirection = Vector3.Normalize(hitInfo.normal);
+        _gravityDirection = -hitInfo.normal * GRAVITY_FORCE;
+        NormalDirection = hitInfo.normal;
 
         CanChangeGravity = false;
         SetIsJumping(false);
