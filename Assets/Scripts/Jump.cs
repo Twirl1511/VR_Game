@@ -43,7 +43,7 @@ public class Jump : MonoBehaviour
 
     private void ExecuteJump()
     {
-        OnJump?.Invoke();
         _rigidbody.AddForce(Camera.main.transform.forward * _force, ForceMode.Acceleration);
+        OnJump?.Invoke();
     }
 }

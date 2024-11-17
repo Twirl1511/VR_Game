@@ -32,6 +32,8 @@ public class GravityController : MonoBehaviour
     [Space]
     [SerializeField] private int _maxRaycasts = 3;
     [SerializeField] private float _edgeDistance = 0.2f;
+    [SerializeField] private float _defaultDrag = 100f;
+    [SerializeField] private float _duringJumpDrag = 3f;
 
 
     public Vector3 NormalDirection { get; private set; }
@@ -47,6 +49,7 @@ public class GravityController : MonoBehaviour
     private Vector3 _gravityDirection;
     private Vector3 _defaultGravityDirection;
     private Collider[] _collidersForJumpCheck = new Collider[1];
+    private Rigidbody _rigidbody;
 
 
     public event Action OnChangeSurface;
@@ -56,6 +59,7 @@ public class GravityController : MonoBehaviour
 
     private void Start()
     {
+        _rigidbody = GetComponent<Rigidbody>();
         _defaultGravityDirection = Vector3.down * GRAVITY_FORCE;
         ResetGravityToDefault();
 
@@ -137,6 +141,7 @@ public class GravityController : MonoBehaviour
 
     private void StartJumping()
     {
+        _rigidbody.drag = _duringJumpDrag;
         SetIsJumping(true);
         CanChangeGravity = false;
         _changeGravityTimer = 0;
@@ -231,6 +236,7 @@ public class GravityController : MonoBehaviour
 
         CanChangeGravity = false;
         SetIsJumping(false);
+        _rigidbody.drag = _defaultDrag;
 
         OnChangeSurface?.Invoke();
     }
