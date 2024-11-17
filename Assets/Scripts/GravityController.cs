@@ -4,14 +4,15 @@ using UnityEngine;
 public class GravityController : MonoBehaviour
 {
     private const float GRAVITY_FORCE = 9.81f;
+    private float ANGLE_OFFSET = 90f;
 
 
     [SerializeField] private CustomGravityCharacterController _customGravityCharacterController;
     [SerializeField] private CustomGravityActionBasedModeProvider gravityProvider;
     [SerializeField] private PhysicsHandsController _physicsHandsController;
+    [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _distanceToCheckNewSurface = 1.5f;
     [SerializeField] private float _radiusSurfaceDetector = 1f;
-    [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private Transform _surfaceDetector;
     [SerializeField] private Transform _center;                  
     [SerializeField] private float _gravityChangeDelay = 0.2f;
@@ -20,13 +21,17 @@ public class GravityController : MonoBehaviour
     [Space]
     [SerializeField] private float _checkGroundDistance = 1f;
     [SerializeField] private float _checkFallDistance = 1.8f;
-    
 
     [Header("Jump")]
     [Space]
     [SerializeField] private float _jumpDurationTransition = 2.0f;
     [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
     [SerializeField] private Jump _jump;
+
+    [Header("Change surface 270")]
+    [Space]
+    [SerializeField] private int _maxRaycasts = 3;
+    [SerializeField] private float _edgeDistance = 0.2f;
 
 
     public Vector3 NormalDirection { get; private set; }
@@ -38,7 +43,7 @@ public class GravityController : MonoBehaviour
     private bool _isJumping;
     private bool _isTransitioning;
     private float _changeGravityTimer;
-    private float _elapsedTime;
+    private float _transitioningGravityDirectionElapsedTime;
     private Vector3 _gravityDirection;
     private Vector3 _defaultGravityDirection;
     private Collider[] _collidersForJumpCheck = new Collider[1];
@@ -69,9 +74,10 @@ public class GravityController : MonoBehaviour
         TransitioningGravityDirectionWhileJumping();
         UpdateGravityVelocity();
 
-        if(!CanChangeGravity)
+        if (!CanChangeGravity)
+        {
             CanChangeGravity = IsReadyToChangeGravity();
-
+        }
 
         if (_isJumping)
         {
@@ -82,7 +88,6 @@ public class GravityController : MonoBehaviour
 
             return;
         }
-
 
         if (CanChangeGravity && _customGravityCharacterController.IsMoving)
             CheckGravityDirection();
@@ -109,8 +114,8 @@ public class GravityController : MonoBehaviour
 
         if (_isTransitioning)
         {
-            _elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(_elapsedTime / _jumpDurationTransition);
+            _transitioningGravityDirectionElapsedTime += Time.deltaTime;
+            float progress = Mathf.Clamp01(_transitioningGravityDirectionElapsedTime / _jumpDurationTransition);
             float curveValue = _curve.Evaluate(progress);
             _gravityDirection = Vector3.Lerp(_gravityDirection, _defaultGravityDirection, curveValue);
 
@@ -126,7 +131,7 @@ public class GravityController : MonoBehaviour
 
     private void StartTransition()
     {
-        _elapsedTime = 0f;
+        _transitioningGravityDirectionElapsedTime = 0f;
         _isTransitioning = true;
     }
 
@@ -142,55 +147,66 @@ public class GravityController : MonoBehaviour
     {
         _gravityDirection = _defaultGravityDirection;
         NormalDirection = Vector3.up;
-        CanChangeGravity = false;
         _changeGravityTimer = 0;
     }
 
-    //private void CheckGravityDirection()
-    //{
-    //    Vector3 direction = (_surfaceDetector.position - _center.position).normalized;
-    //    Ray ray = new Ray(_center.position, direction);
-    //    Debug.DrawRay(_center.position, direction * _distanceToCheckNewSurface, Color.red);
-
-    //    if (Physics.Raycast(ray, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
-    //    {
-    //        SetNewSurface(hitInfo);
-    //    }
-    //}
+    private bool IsOnEdge(Vector3 origin, Vector3 direction)
+    {
+        Ray ray = new Ray(origin, direction);
+        return !Physics.Raycast(ray, out _, _distanceToCheckNewSurface, _groundLayer);
+    }
 
     private void CheckGravityDirection()
     {
         Vector3 currentOrigin = _center.position;
-        Vector3 currentDirection = (_surfaceDetector.position - _center.position).normalized; 
-        int maxRaycasts = 3; 
-        float angleOffset = 90f;
-        Quaternion rotation = Quaternion.AngleAxis(angleOffset, Vector3.Cross(currentDirection, -transform.up));
+        Vector3 currentDirection = (_surfaceDetector.position - _center.position).normalized;
+        Quaternion rotation = Quaternion.AngleAxis(ANGLE_OFFSET, Vector3.Cross(currentDirection, -transform.up));
 
-        for (int i = 0; i < maxRaycasts; i++)
+        Vector3 edgeOriginPoint = currentOrigin + (currentDirection * _edgeDistance);
+
+        for (int i = 0; i < _maxRaycasts; i++)
         {
             Ray ray = new Ray(currentOrigin, currentDirection);
-            Debug.DrawRay(currentOrigin, currentDirection * _distanceToCheckNewSurface, Color.red);
+            Debug.DrawRay(currentOrigin, currentDirection * GetModifiedDistance(i), Color.red);
 
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
+            currentOrigin += currentDirection * _distanceToCheckNewSurface;
+            currentDirection = rotation * currentDirection;
+
+            if (i == 1)
             {
-                if(!IsTheSameVector(hitInfo.normal, NormalDirection, 0.1f))
+                continue;
+            }
+
+            if (!Physics.Raycast(ray, out RaycastHit hitInfo, GetModifiedDistance(i), _groundLayer))
+            {
+                continue;
+            }
+
+            if (i == 0) // first forward raycast hitting a wall on 90 degrees
+            {
+                SetNewSurface(hitInfo);
+                return;
+            }
+            else if (i == 2) // third raycast hitting an edge at 270 degrees
+            {
+                if (IsOnEdge(edgeOriginPoint, -transform.up))
                 {
-                    SetNewSurface(hitInfo); 
+                    transform.position = currentOrigin;
+                    SetNewSurface(hitInfo);
                 }
 
                 return;
             }
-
-            currentOrigin += currentDirection * _distanceToCheckNewSurface;
-            currentDirection = rotation * currentDirection;
         }
-    }
 
-    private bool IsTheSameVector(Vector3 vector1, Vector3 vector2, float tolerance = 0.01f)
-    {
-        return Mathf.Abs(vector1.x - vector2.x) < tolerance &&
-               Mathf.Abs(vector1.y - vector2.y) < tolerance &&
-               Mathf.Abs(vector1.z - vector2.z) < tolerance;
+
+
+
+        return;
+        float GetModifiedDistance(int index)
+        {
+            return index == 2 ? _distanceToCheckNewSurface * 1.5f : _distanceToCheckNewSurface;
+        }
     }
 
     private void CheckGravityDirectionWithSphereCast()

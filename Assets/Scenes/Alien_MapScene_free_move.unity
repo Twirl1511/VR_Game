@@ -2837,6 +2837,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: TEEEEST
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _speeeeeeeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _edgeDistance
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: _physicsHandsController
       value: 
       objectReference: {fileID: 1290185139}
@@ -2883,6 +2895,30 @@ PrefabInstance:
     - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: _curve.m_Curve.Array.data[1].outWeight
       value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 7101462131322338099, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416570971092969837, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _surfaceAlignmentAnimationCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416570971092969837, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _surfaceAlignmentAnimationCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416570971092969837, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _surfaceAlignmentAnimationCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416570971092969837, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _surfaceAlignmentAnimationCurve.m_Curve.Array.data[1].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416570971092969837, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _surfaceAlignmentAnimationCurve.m_Curve.Array.data[1].outSlope
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

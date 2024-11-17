@@ -9,13 +9,13 @@ public class CustomGravityCharacterController : MonoBehaviour
     [SerializeField] private float _changeAlignmentSpeed = 0.1f;
     [SerializeField] private Transform _camera;
     [SerializeField] private float _checkGroundDistance = 1f;
-    [SerializeField] private AnimationCurve _animationCurve;
+    [SerializeField] private AnimationCurve _surfaceAlignmentAnimationCurve;
 
     public bool IsMoving { get; private set; }
     private Vector3 NormalDirection => _gravityController.NormalDirection;
 
     private Rigidbody _rigidBody;
-
+    
 
 
 
@@ -41,7 +41,7 @@ public class CustomGravityCharacterController : MonoBehaviour
         Quaternion alignToNormal = Quaternion.FromToRotation(transform.up, NormalDirection);
         Quaternion targetRotation = alignToNormal * rotationRef;
 
-        rotationRef = Quaternion.Lerp(rotationRef, targetRotation, _animationCurve.Evaluate(Time.time) * _changeAlignmentSpeed);
+        rotationRef = Quaternion.Lerp(rotationRef, targetRotation, _surfaceAlignmentAnimationCurve.Evaluate(Time.time) * _changeAlignmentSpeed);
         transform.rotation = rotationRef;
     }
 
@@ -57,7 +57,9 @@ public class CustomGravityCharacterController : MonoBehaviour
         Vector3 relativeMoveDirection = Vector3.ProjectOnPlane(moveDirection, NormalDirection);
         Vector3 moveVelocity = relativeMoveDirection * GetSpeed();
 
+
         _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityController.GravityVelocity) * Time.deltaTime);
+
 
         IsMoving = input != Vector2.zero;
         if (IsMoving)
