@@ -63,13 +63,17 @@ public class GravityController : MonoBehaviour
         _defaultGravityDirection = Vector3.down * GRAVITY_FORCE;
         ResetGravityToDefault();
 
-        _physicsHandsController.OnJump += StartJumping;
+        if(_physicsHandsController != null)
+            _physicsHandsController.OnJump += StartJumping;
+
         _jump.OnJump += StartJumping;
     }
 
     private void OnDestroy()
     {
-        _physicsHandsController.OnJump -= StartJumping;
+        if (_physicsHandsController != null)
+            _physicsHandsController.OnJump -= StartJumping;
+
         _jump.OnJump -= StartJumping;
     }
 

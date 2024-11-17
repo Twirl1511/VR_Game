@@ -9221,6 +9221,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Physics Hands
       objectReference: {fileID: 0}
+    - target: {fileID: 3904965869833951581, guid: 51a91fd0694cb6543a5c5a339a470e89, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7225591133095479195, guid: 51a91fd0694cb6543a5c5a339a470e89, type: 3}
       propertyPath: _target
       value: 
