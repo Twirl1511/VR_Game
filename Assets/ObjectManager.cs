@@ -13,13 +13,11 @@ public class ObjectManager : MonoBehaviour
 
     private Queue<ObjectToCatch> objectQueue = new Queue<ObjectToCatch>();
     private List<ObjectToCatch> greenObjects = new List<ObjectToCatch>();
+    private List<ObjectToCatch> missedObjects = new List<ObjectToCatch>(); // Пропущенные объекты
     private bool isChainActive = false; // Флаг для активации цепочки
 
     private void Start()
     {
-        // Добавляем все объекты в очередь
-        objectQueue = new Queue<ObjectToCatch>(objects);
-
         // Выключаем все объекты на старте
         foreach (var obj in objects)
         {
@@ -27,9 +25,10 @@ public class ObjectManager : MonoBehaviour
         }
 
         // Включаем первый объект
-        if (objectQueue.Count > 0)
+        if (objects.Count > 0)
         {
-            var firstObject = objectQueue.Dequeue();
+            var firstObject = objects[0];
+            objects.RemoveAt(0); // Удаляем первый объект из списка, чтобы не перемешивать его
             firstObject.gameObject.SetActive(true);
             StartGreenBlinking(firstObject);
 
@@ -48,7 +47,23 @@ public class ObjectManager : MonoBehaviour
 
         // Запускаем цепочку активации
         isChainActive = true;
+
+        // Перемешиваем оставшиеся объекты
+        ShuffleObjects();
+        objectQueue = new Queue<ObjectToCatch>(objects);
+
         StartCoroutine(ActivateObjectsRoutine());
+    }
+
+    private void ShuffleObjects()
+    {
+        for (int i = objects.Count - 1; i > 0; i--)
+        {
+            int randomIndex = Random.Range(0, i + 1);
+            var temp = objects[i];
+            objects[i] = objects[randomIndex];
+            objects[randomIndex] = temp;
+        }
     }
 
     private IEnumerator ActivateObjectsRoutine()
@@ -66,10 +81,16 @@ public class ObjectManager : MonoBehaviour
 
             // Ожидаем, пока объект станет неактивным или игрок коснется объекта
             yield return new WaitUntil(() => !currentObject.gameObject.activeSelf || touched);
+
+            // Если объект не успели коснуться, добавляем его в список пропущенных
+            if (!touched)
+            {
+                missedObjects.Add(currentObject);
+            }
         }
 
-        // Запускаем мигание всех оставшихся объектов
-        StartBlinking();
+        // Показываем пропущенные объекты
+        ShowMissedObjects();
     }
 
     private IEnumerator TimerRoutine(ObjectToCatch obj, System.Action onTouched)
@@ -101,23 +122,6 @@ public class ObjectManager : MonoBehaviour
         return obj.IsTouched;
     }
 
-    private void StartBlinking()
-    {
-        foreach (var obj in objects)
-        {
-            var renderer = obj.GetComponent<Renderer>();
-
-            if (!greenObjects.Contains(obj))
-            {
-                // Красные объекты мигают между красным и прозрачным
-                renderer.material.color = Color.red;
-                renderer.material.DOColor(new Color(1, 0, 0, 0), blinkingDuration)
-                    .SetLoops(-1, LoopType.Yoyo);
-                obj.gameObject.SetActive(true);
-            }
-        }
-    }
-
     private void StartGreenBlinking(ObjectToCatch obj)
     {
         var renderer = obj.GetComponent<Renderer>();
@@ -143,5 +147,23 @@ public class ObjectManager : MonoBehaviour
         obj.transform.DOKill(); // Останавливаем анимацию масштаба
         renderer.material.color = Color.green; // Устанавливаем окончательный цвет
         obj.transform.localScale = Vector3.one; // Возвращаем размер к обычному
+    }
+
+    private void ShowMissedObjects()
+    {
+        foreach (var obj in missedObjects)
+        {
+            var renderer = obj.GetComponent<Renderer>();
+
+            // Красим объект в красный цвет
+            renderer.material.DOKill(); // Останавливаем все анимации цвета
+            renderer.material.color = Color.red;
+
+            // Анимация изменения размера
+            obj.transform.DOScale(Vector3.one * scaleMultiplier, blinkingDuration / 2)
+                .SetLoops(-1, LoopType.Yoyo);
+
+            obj.gameObject.SetActive(true); // Делаем объект видимым
+        }
     }
 }
