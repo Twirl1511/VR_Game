@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,7 +31,7 @@ public class Jump : MonoBehaviour
         _jumpButton.action.performed -= PressButton;
     }
 
-    private void PressButton(InputAction.CallbackContext obj)
+    private void PressButton(InputAction.CallbackContext _)
     {
         if (!IsGround)
             return;
@@ -43,7 +41,18 @@ public class Jump : MonoBehaviour
 
     private void ExecuteJump()
     {
-        _rigidbody.AddForce(Camera.main.transform.forward * _force, ForceMode.Acceleration);
+        Vector3 cameraForward = Camera.main.transform.forward;
+        Vector3 forwardOnSurface = Vector3.ProjectOnPlane(cameraForward, _gravityController.NormalDirection).normalized;
+        bool isLookingBelowHorizon = Vector3.Dot(cameraForward, _gravityController.NormalDirection) < 0;
+        if (isLookingBelowHorizon)
+        {
+            _rigidbody.AddForce(forwardOnSurface * _force, ForceMode.Acceleration);
+        }
+        else
+        {
+            _rigidbody.AddForce(cameraForward * _force, ForceMode.Acceleration);
+        }
+
         OnJump?.Invoke();
     }
 }

@@ -32,6 +32,7 @@ public class GravityController : MonoBehaviour
     [Space]
     [SerializeField] private int _maxRaycasts = 3;
     [SerializeField] private float _edgeDistance = 0.2f;
+    [SerializeField] private float _teleportaionDistanceCloseToEdge = 0.5f;
     [SerializeField] private float _defaultDrag = 100f;
     [SerializeField] private float _duringJumpDrag = 3f;
 
@@ -181,6 +182,11 @@ public class GravityController : MonoBehaviour
             currentOrigin += currentDirection * _distanceToCheckNewSurface;
             currentDirection = rotation * currentDirection;
 
+            if (i == 2)
+            {
+                
+            }
+
             if (i == 1)
             {
                 continue;
@@ -200,7 +206,8 @@ public class GravityController : MonoBehaviour
             {
                 if (IsOnEdge(edgeOriginPoint, -transform.up))
                 {
-                    transform.position = currentOrigin;
+                    Vector3 teleportPosition = currentOrigin + (currentDirection * _teleportaionDistanceCloseToEdge);
+                    transform.position = teleportPosition;
                     SetNewSurface(hitInfo);
                 }
 
