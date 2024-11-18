@@ -182,11 +182,6 @@ public class GravityController : MonoBehaviour
             currentOrigin += currentDirection * _distanceToCheckNewSurface;
             currentDirection = rotation * currentDirection;
 
-            if (i == 2)
-            {
-                
-            }
-
             if (i == 1)
             {
                 continue;

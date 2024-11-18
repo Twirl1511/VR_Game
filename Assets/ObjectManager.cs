@@ -6,15 +6,15 @@ using DG.Tweening;
 public class ObjectManager : MonoBehaviour
 {
     [Header("Настройки")]
+    //[SerializeField] private List<ObjectToCatch> _prefabs = new List<ObjectToCatch>();
     public List<ObjectToCatch> objects = new List<ObjectToCatch>();
     public float activationTime = 5f; // Время, в течение которого объект активен
     public float blinkingDuration = 2f; // Длительность мигания объектов
     public float scaleMultiplier = 1.5f; // Во сколько раз увеличивается объект при мигании
+    public float rotationSpeed = 90f; // Скорость вращения вокруг оси Y
 
     private Queue<ObjectToCatch> objectQueue = new Queue<ObjectToCatch>();
-    private List<ObjectToCatch> greenObjects = new List<ObjectToCatch>();
     private List<ObjectToCatch> missedObjects = new List<ObjectToCatch>(); // Пропущенные объекты
-    private bool isChainActive = false; // Флаг для активации цепочки
 
     private void Start()
     {
@@ -44,9 +44,6 @@ public class ObjectManager : MonoBehaviour
         // Останавливаем мигание первого объекта
         StopBlinking(firstObject);
         firstObject.gameObject.SetActive(false);
-
-        // Запускаем цепочку активации
-        isChainActive = true;
 
         // Перемешиваем оставшиеся объекты
         ShuffleObjects();
@@ -124,44 +121,41 @@ public class ObjectManager : MonoBehaviour
 
     private void StartGreenBlinking(ObjectToCatch obj)
     {
-        var renderer = obj.GetComponent<Renderer>();
-        renderer.material.color = Color.green;
-
-        // Зеленые объекты мигают между 30% и 100% прозрачности
-        Color startColor = new Color(0, 1, 0, 0.3f);
-        Color endColor = new Color(0, 1, 0, 1.0f);
-
-        renderer.material.DOColor(endColor, blinkingDuration / 2)
-            .SetLoops(-1, LoopType.Yoyo)
-            .From(startColor);
-
         // Зеленые объекты увеличиваются/уменьшаются
         obj.transform.DOScale(Vector3.one * scaleMultiplier, blinkingDuration / 2)
             .SetLoops(-1, LoopType.Yoyo);
+
+        // Добавляем вращение вокруг оси Y
+        obj.transform.DORotate(new Vector3(0, 360, 0), 360f / rotationSpeed, RotateMode.FastBeyond360)
+            .SetLoops(-1, LoopType.Restart)
+            .SetEase(Ease.Linear);
     }
 
     private void StopBlinking(ObjectToCatch obj)
     {
-        var renderer = obj.GetComponent<Renderer>();
-        renderer.material.DOKill(); // Останавливаем все анимации на объекте
-        obj.transform.DOKill(); // Останавливаем анимацию масштаба
-        renderer.material.color = Color.green; // Устанавливаем окончательный цвет
+        obj.transform.DOKill(); // Останавливаем анимацию масштаба и вращения
         obj.transform.localScale = Vector3.one; // Возвращаем размер к обычному
+        obj.transform.rotation = Quaternion.identity; // Сбрасываем вращение
     }
 
     private void ShowMissedObjects()
     {
         foreach (var obj in missedObjects)
         {
-            var renderer = obj.GetComponent<Renderer>();
+            //var renderer = obj.GetComponent<Renderer>();
 
-            // Красим объект в красный цвет
-            renderer.material.DOKill(); // Останавливаем все анимации цвета
-            renderer.material.color = Color.red;
+            //// Красим объект в красный цвет
+            //renderer.material.DOKill(); // Останавливаем все анимации цвета
+            //renderer.material.color = Color.red;
 
             // Анимация изменения размера
-            obj.transform.DOScale(Vector3.one * scaleMultiplier, blinkingDuration / 2)
+            obj.transform.DOScale(Vector3.one * scaleMultiplier, blinkingDuration)
                 .SetLoops(-1, LoopType.Yoyo);
+
+            // Добавляем вращение вокруг оси Y
+            obj.transform.DORotate(new Vector3(0, 360, 0), 360f / rotationSpeed, RotateMode.FastBeyond360)
+                .SetLoops(-1, LoopType.Restart)
+                .SetEase(Ease.Linear);
 
             obj.gameObject.SetActive(true); // Делаем объект видимым
         }
