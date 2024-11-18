@@ -7,6 +7,7 @@ public class ObjectManager : MonoBehaviour
 {
     [Header("Настройки")]
     //[SerializeField] private List<ObjectToCatch> _prefabs = new List<ObjectToCatch>();
+    [SerializeField] private ParticleSystem _particle;
     public List<ObjectToCatch> objects = new List<ObjectToCatch>();
     public float activationTime = 5f; // Время, в течение которого объект активен
     public float blinkingDuration = 2f; // Длительность мигания объектов
@@ -133,6 +134,7 @@ public class ObjectManager : MonoBehaviour
 
     private void StopBlinking(ObjectToCatch obj)
     {
+        ActivateParticles(obj.transform.position);
         obj.transform.DOKill(); // Останавливаем анимацию масштаба и вращения
         obj.transform.localScale = Vector3.one; // Возвращаем размер к обычному
         obj.transform.rotation = Quaternion.identity; // Сбрасываем вращение
@@ -159,5 +161,11 @@ public class ObjectManager : MonoBehaviour
 
             obj.gameObject.SetActive(true); // Делаем объект видимым
         }
+    }
+
+    private void ActivateParticles(Vector3 position)
+    {
+        _particle.transform.position = position;
+        _particle.Play();
     }
 }
