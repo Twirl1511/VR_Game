@@ -24,7 +24,7 @@ public class VelocityDebugger : MonoBehaviour
 
     private Color ColorForVelocity()
     {
-        float velocity = _rigidbody.velocity.magnitude;
+        float velocity = _rigidbody.linearVelocity.magnitude;
 
         if (velocity >= maxVelocity)
             return Color.red;

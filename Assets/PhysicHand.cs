@@ -107,7 +107,7 @@ public class PhysicsHand : MonoBehaviour
         float g = 1 / (1 + kd * Time.fixedDeltaTime + kp * Time.fixedDeltaTime * Time.fixedDeltaTime);
         float ksg = kp * g;
         float kdg = (kd + kp * Time.fixedDeltaTime) * g;
-        Vector3 force = (_target.position - transform.position) * ksg + (_playerRigidbody.velocity - _selfRigidbody.velocity) * kdg;
+        Vector3 force = (_target.position - transform.position) * ksg + (_playerRigidbody.linearVelocity - _selfRigidbody.linearVelocity) * kdg;
         _selfRigidbody.AddForce(force, ForceMode.Acceleration);
     }
 
@@ -145,7 +145,7 @@ public class PhysicsHand : MonoBehaviour
 
     private bool IsVelocityEnoughForJump()
     {
-        return _selfRigidbody.velocity.sqrMagnitude > _squareMagnitudeAllowJump;
+        return _selfRigidbody.linearVelocity.sqrMagnitude > _squareMagnitudeAllowJump;
     }
 
     private void OnCollisionEnter(Collision collision)

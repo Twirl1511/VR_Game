@@ -22,7 +22,7 @@ public class FirePistol : MonoBehaviour
 
     private void Start()
     {
-        XRGrabInteractable interactable = GetComponent<XRGrabInteractable>();
+        UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         interactable.activated.AddListener(Fire); 
     }
 
@@ -33,7 +33,7 @@ public class FirePistol : MonoBehaviour
             _spawnPointTransform.position, 
             Quaternion.identity);
 
-        bullet.GetComponent<Rigidbody>().velocity = _spawnPointTransform.forward * _speed;
+        bullet.GetComponent<Rigidbody>().linearVelocity = _spawnPointTransform.forward * _speed;
 
         Destroy(bullet, LIFE_TIME);
     }

@@ -146,7 +146,7 @@ public class GravityController : MonoBehaviour
 
     private void StartJumping()
     {
-        _rigidbody.drag = _duringJumpDrag;
+        _rigidbody.linearDamping = _duringJumpDrag;
         SetIsJumping(true);
         CanChangeGravity = false;
         _changeGravityTimer = 0;
@@ -227,7 +227,7 @@ public class GravityController : MonoBehaviour
         if (hitCount == 0)
             return;
 
-        SetIsJumping(false); /// вообще это лишнее, так как игрок должен приклеиться к поверхности
+        SetIsJumping(false); /// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         Vector3 direction = (_collidersForJumpCheck[0].ClosestPoint(transform.position) - transform.position).normalized;
         if (Physics.Raycast(transform.position, direction, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
         {
@@ -242,7 +242,7 @@ public class GravityController : MonoBehaviour
 
         CanChangeGravity = false;
         SetIsJumping(false);
-        _rigidbody.drag = _defaultDrag;
+        _rigidbody.linearDamping = _defaultDrag;
 
         OnChangeSurface?.Invoke();
     }

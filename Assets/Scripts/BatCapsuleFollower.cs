@@ -49,7 +49,7 @@ public class BatCapsuleFollower : MonoBehaviour
 
         _velocity = (destination - _rigidbody.transform.position) * _sensitivity;
 
-        _rigidbody.velocity = _velocity * _speed;
+        _rigidbody.linearVelocity = _velocity * _speed;
     }
 
     public void SetFollowTarget(BatCapsule batCapsule)
@@ -59,6 +59,6 @@ public class BatCapsuleFollower : MonoBehaviour
 
     public bool CanReflect()
     {
-        return _canReflect = _rigidbody.velocity.magnitude <= _speedToReflect;
+        return _canReflect = _rigidbody.linearVelocity.magnitude <= _speedToReflect;
     }
 }

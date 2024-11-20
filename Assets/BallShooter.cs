@@ -31,14 +31,14 @@ public class BallShooter : MonoBehaviour
             Random.Range(0, 361));
 
         GameObject ball = Instantiate(_ball, _shootPosition.transform.position, Quaternion.identity, null);
-        ball.GetComponent<Rigidbody>().velocity = _shootPosition.forward * 10f;
+        ball.GetComponent<Rigidbody>().linearVelocity = _shootPosition.forward * 10f;
         Destroy(ball, 10);
     }
 
     public void ShootStatic()
     {
         GameObject ball = Instantiate(_ball, _shootPosition.transform.position, Quaternion.identity, null);
-        ball.GetComponent<Rigidbody>().velocity = _shootPosition.forward * 10f;
+        ball.GetComponent<Rigidbody>().linearVelocity = _shootPosition.forward * 10f;
         Destroy(ball, 10);
     }
 

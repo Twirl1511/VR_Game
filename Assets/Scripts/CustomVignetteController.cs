@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
+
 
 public class CustomVignetteController : MonoBehaviour
 {
@@ -11,16 +11,16 @@ public class CustomVignetteController : MonoBehaviour
     private GravityController _gravityController;
 
     [SerializeField]
-    private VignetteParameters _parameters = new VignetteParameters();
+    private UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort.VignetteParameters _parameters = new UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort.VignetteParameters();
 
     [SerializeField]
-    private VignetteParameters _defaultParameters = new VignetteParameters();
+    private UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort.VignetteParameters _defaultParameters = new UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort.VignetteParameters();
 
     private MeshRenderer m_MeshRender;
     private MeshFilter m_MeshFilter;
     private Material m_SharedMaterial;
     private MaterialPropertyBlock m_VignettePropertyBlock;
-    private VignetteParameters _currentParameters = new VignetteParameters();
+    private UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort.VignetteParameters _currentParameters = new UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort.VignetteParameters();
     private float _elapsedTime;
     private enum Status
     {
@@ -82,7 +82,7 @@ public class CustomVignetteController : MonoBehaviour
         }
     }
 
-    private void UpdateTunnelingVignette(VignetteParameters parameters)
+    private void UpdateTunnelingVignette(UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort.VignetteParameters parameters)
     {
         m_MeshRender.GetPropertyBlock(m_VignettePropertyBlock);
         m_VignettePropertyBlock.SetFloat(_apertureSize, parameters.apertureSize);
@@ -138,13 +138,13 @@ public class CustomVignetteController : MonoBehaviour
 
     private float LerpValue(float start, float end, float time)
     {
-        // Увеличиваем время
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         _elapsedTime += Time.deltaTime;
 
-        // Вычисляем процент завершения (от 0 до 1)
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ 0 пїЅпїЅ 1)
         float t = Mathf.Clamp01(_elapsedTime / time);
 
-        // Линейная интерполяция между start и end
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ start пїЅ end
         return Mathf.Lerp(start, end, t);
     }
 

@@ -37,7 +37,7 @@ public class Ball : MonoBehaviour
     private void FixedUpdate()
     {
         if(IsReady() && _isHitWithSaber == false)
-            _direction = _rigidbody.velocity.normalized;
+            _direction = _rigidbody.linearVelocity.normalized;
     }
 
     private bool IsReady()
@@ -56,7 +56,7 @@ public class Ball : MonoBehaviour
         Vector3 dir = default;
         if (collision.gameObject.CompareTag("Saber"))
         {
-            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.linearVelocity = Vector3.zero;
             _isHitWithSaber = true;
             dir = GetAngleDirection(collision.transform);
             _hitSaberPosition = transform.position;
@@ -74,13 +74,13 @@ public class Ball : MonoBehaviour
             transform.position = _hitSaberPosition;
             _trail.enabled = true;
             _mesh.enabled = true;
-            _rigidbody.velocity = dir * 20f;
+            _rigidbody.linearVelocity = dir * 20f;
             _isHitWithSaber = false;
         }
         else
         {
             yield return new WaitForEndOfFrame();
-            _rigidbody.velocity = _rigidbody.velocity.normalized * 10f;
+            _rigidbody.linearVelocity = _rigidbody.linearVelocity.normalized * 10f;
             _isHitWithSaber = false;
         }
 
@@ -89,19 +89,19 @@ public class Ball : MonoBehaviour
 
     private Vector3 GetAngleDirection(Transform batTransform)
     {
-        return batTransform.gameObject.GetComponent<Rigidbody>().velocity;
+        return batTransform.gameObject.GetComponent<Rigidbody>().linearVelocity;
 
 
-        // Получаем угол падения мяча
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
         float angle = Vector3.Angle(_direction, batTransform.forward);
-        // Получаем угол наклона биты
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
         Vector3 batEuler = batTransform.eulerAngles;
         float batAngle = Mathf.Abs(90 - batEuler.x) + Mathf.Abs(batEuler.y) + Mathf.Abs(batEuler.z);
 
-        // Рассчитываем угол отскока
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         float bounceAngle = angle - (angle - batAngle) * 2;
-        // Применяем угол отскока к направлению движения мяча
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
         Vector3 bounceDirection = Quaternion.AngleAxis(bounceAngle, Vector3.up) * -_direction.normalized;
         return bounceDirection;
     }
