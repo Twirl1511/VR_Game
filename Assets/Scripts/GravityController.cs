@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GravityController : MonoBehaviour
 {
     private const float GRAVITY_FORCE = 9.81f;
     private float ANGLE_OFFSET = 90f;
 
-
+    [SerializeField] private InputActionReference _wallRunButton;
     [SerializeField] private CustomGravityCharacterController _customGravityCharacterController;
     [SerializeField] private CustomGravityActionBasedModeProvider gravityProvider;
     [SerializeField] private PhysicsHandsController _physicsHandsController;
@@ -45,6 +46,7 @@ public class GravityController : MonoBehaviour
 
     private bool _isJumping;
     private bool _isTransitioning;
+    private bool _isWallRunning;
     private float _changeGravityTimer;
     private float _transitioningGravityDirectionElapsedTime;
     private Vector3 _gravityDirection;
@@ -67,6 +69,8 @@ public class GravityController : MonoBehaviour
         if(_physicsHandsController != null)
             _physicsHandsController.OnJump += StartJumping;
 
+        _wallRunButton.action.started += ActivateWallRun;
+        _wallRunButton.action.canceled += DeactivateWallRun;
         _jump.OnJump += StartJumping;
     }
 
@@ -75,6 +79,8 @@ public class GravityController : MonoBehaviour
         if (_physicsHandsController != null)
             _physicsHandsController.OnJump -= StartJumping;
 
+        _wallRunButton.action.started -= ActivateWallRun;
+        _wallRunButton.action.canceled -= DeactivateWallRun;
         _jump.OnJump -= StartJumping;
     }
 
@@ -90,7 +96,7 @@ public class GravityController : MonoBehaviour
 
         if (_isJumping)
         {
-            if (CanChangeGravity)
+            if (CanChangeGravity && _isWallRunning)
             {
                 CheckGravityDirectionWithSphereCast();
             }
@@ -98,8 +104,19 @@ public class GravityController : MonoBehaviour
             return;
         }
 
-        if (CanChangeGravity && _customGravityCharacterController.IsMoving)
+        if (CanChangeGravity && _isWallRunning)
             CheckGravityDirection();
+    }
+
+    private void ActivateWallRun(InputAction.CallbackContext _)
+    {
+        _isWallRunning = true;
+    }
+
+    private void DeactivateWallRun(InputAction.CallbackContext _)
+    {
+        _isWallRunning = false;
+        ResetGravityToDefault();
     }
 
     private bool IsReadyToChangeGravity()
