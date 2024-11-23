@@ -48,6 +48,7 @@ public class CustomGravityCharacterController : MonoBehaviour
 
 
 
+
     public void Move(Vector2 input)
     {
         Vector3 cameraForward = Vector3.ProjectOnPlane(_camera.forward, NormalDirection).normalized;

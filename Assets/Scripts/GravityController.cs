@@ -18,7 +18,7 @@ public class GravityController : MonoBehaviour
     [SerializeField] private Transform _center;                  
     [SerializeField] private float _gravityChangeDelay = 0.2f;
 
-    [Header("Ground and Fall distance")]
+    [Header("Check ground and fall distance")]
     [Space]
     [SerializeField] private float _checkGroundDistance = 1f;
     [SerializeField] private float _checkFallDistance = 1.8f;
@@ -36,6 +36,13 @@ public class GravityController : MonoBehaviour
     [SerializeField] private float _teleportaionDistanceCloseToEdge = 0.5f;
     [SerializeField] private float _defaultDrag = 100f;
     [SerializeField] private float _duringJumpDrag = 3f;
+
+    [Header("Change surface rays")]
+    [Space]
+    [SerializeField] private float _firstRayDistance = 1f;
+    [SerializeField] private float _secondRayDistance = 1f;
+    [SerializeField] private float _thirdRayDistance = 1f;
+    [SerializeField] private float _fourthRayDistance = 1f;
 
 
     public Vector3 NormalDirection { get; private set; }
@@ -191,39 +198,33 @@ public class GravityController : MonoBehaviour
 
         Vector3 edgeOriginPoint = currentOrigin + (currentDirection * _edgeDistance);
 
+        Vector3 previousOrigin = currentOrigin;
+        Vector3 previousDirection = currentDirection;
+        Vector3 teleportPosition = currentOrigin;
+
         for (int i = 0; i < _maxRaycasts; i++)
         {
             Ray ray = new Ray(currentOrigin, currentDirection);
             Debug.DrawRay(currentOrigin, currentDirection * GetModifiedDistance(i), Color.red);
 
-            currentOrigin += currentDirection * _distanceToCheckNewSurface;
-            currentDirection = rotation * currentDirection;
-
-            if (i == 1)
-            {
-                continue;
-            }
-
             if (!Physics.Raycast(ray, out RaycastHit hitInfo, GetModifiedDistance(i), _groundLayer))
             {
+                previousOrigin = currentOrigin;
+                previousDirection = currentDirection;
+
+                currentOrigin += currentDirection * GetModifiedDistance(i);
+                currentDirection = rotation * currentDirection;
+
                 continue;
             }
 
-            if (i == 0) // first forward raycast hitting a wall on 90 degrees
+            switch (i)
             {
-                SetNewSurface(hitInfo);
-                return;
-            }
-            else if (i == 2) // third raycast hitting an edge at 270 degrees
-            {
-                if (IsOnEdge(edgeOriginPoint, -transform.up))
-                {
-                    Vector3 teleportPosition = currentOrigin + (currentDirection * _teleportaionDistanceCloseToEdge);
-                    transform.position = teleportPosition;
-                    SetNewSurface(hitInfo);
-                }
-
-                return;
+                case 0: TeleportOnWall(hitInfo); return;                    // forward
+                case 1: return;                                             // forward -> down
+                case 2: TryTeleportOnEdge(hitInfo); return;                 // forward -> down -> back
+                case 3: TryTeleportOnOtherSideOfTheWall(hitInfo); return;   // forward -> down -> back -> up
+                default: return;
             }
         }
 
@@ -233,7 +234,42 @@ public class GravityController : MonoBehaviour
         return;
         float GetModifiedDistance(int index)
         {
-            return index == 2 ? _distanceToCheckNewSurface * 1.5f : _distanceToCheckNewSurface;
+            switch (index)
+            {
+                case 0: return _firstRayDistance;
+                case 1: return _secondRayDistance;
+                case 2: return _thirdRayDistance;
+                case 3: return _fourthRayDistance;
+                default: return 1;
+            }
+        }
+        void TeleportOnWall(RaycastHit hitInfo)
+        {
+            SetNewSurface(hitInfo);
+        }
+        void TryTeleportOnEdge(RaycastHit hitInfo)
+        {
+            print(1);
+            teleportPosition = previousOrigin + (previousDirection * _teleportaionDistanceCloseToEdge);
+            Debug.DrawLine(previousOrigin, teleportPosition, Color.blue, 1f);
+
+            if (IsOnEdge(edgeOriginPoint, -transform.up))
+            {
+                transform.position = teleportPosition;
+                SetNewSurface(hitInfo);
+            }
+        }
+        void TryTeleportOnOtherSideOfTheWall(RaycastHit hitInfo)
+        {
+            print(2);
+            teleportPosition = previousOrigin + (previousDirection * (_firstRayDistance + _edgeDistance + 0.1f));
+            Debug.DrawLine(previousOrigin, teleportPosition, Color.blue, 1f);
+
+            if (IsOnEdge(edgeOriginPoint, -transform.up))
+            {
+                transform.position = teleportPosition;
+                SetNewSurface(hitInfo);
+            }
         }
     }
 
@@ -244,7 +280,7 @@ public class GravityController : MonoBehaviour
         if (hitCount == 0)
             return;
 
-        SetIsJumping(false); /// ������ ��� ������, ��� ��� ����� ������ ����������� � �����������
+        SetIsJumping(false); 
         Vector3 direction = (_collidersForJumpCheck[0].ClosestPoint(transform.position) - transform.position).normalized;
         if (Physics.Raycast(transform.position, direction, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
         {
