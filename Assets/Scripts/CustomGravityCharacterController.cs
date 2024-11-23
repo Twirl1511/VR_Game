@@ -48,7 +48,6 @@ public class CustomGravityCharacterController : MonoBehaviour
 
 
 
-
     public void Move(Vector2 input)
     {
         Vector3 cameraForward = Vector3.ProjectOnPlane(_camera.forward, NormalDirection).normalized;
@@ -59,8 +58,12 @@ public class CustomGravityCharacterController : MonoBehaviour
         Vector3 moveVelocity = relativeMoveDirection * GetSpeed();
 
 
-        _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityController.GravityVelocity) * Time.deltaTime);
+        if (_gravityController.CanChangeGravity)
+        {
+            _rigidBody.MovePosition(_rigidBody.position + (moveVelocity + _gravityController.GravityVelocity) * Time.deltaTime);
+        }
 
+        
 
         IsMoving = input != Vector2.zero;
         if (IsMoving)

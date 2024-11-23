@@ -4103,17 +4103,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 384231932440844912, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 384231932440844912, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2676707433841297699, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.15
+    - target: {fileID: 3779437935231804940, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: m_Radius
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4289401500592541315, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_Name
@@ -4125,7 +4117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.79
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4160,20 +4152,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
-      propertyPath: _maxRaycasts
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
-      propertyPath: _firstRayDistance
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
-      propertyPath: _thirdRayDistance
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: _secondRayDistance
-      value: 1.5
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+      propertyPath: _checkGroundDistance
+      value: 0.66
       objectReference: {fileID: 0}
     - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: _physicsHandsController
@@ -4181,7 +4165,7 @@ PrefabInstance:
       objectReference: {fileID: 1290185139}
     - target: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
       propertyPath: _teleportaionDistanceCloseToEdge
-      value: 0.8
+      value: 0.6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8419,6 +8403,10 @@ PrefabInstance:
     - target: {fileID: 3164819030442687779, guid: 366035a9c3474f34aa7b9a5a4b5e882b, type: 3}
       propertyPath: m_Name
       value: Wall_Vent (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3164819030442687779, guid: 366035a9c3474f34aa7b9a5a4b5e882b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3164819030442687779, guid: 366035a9c3474f34aa7b9a5a4b5e882b, type: 3}
       propertyPath: m_StaticEditorFlags

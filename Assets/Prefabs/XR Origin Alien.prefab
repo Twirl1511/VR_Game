@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 702477362874351117}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.187, z: 0.169}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1416,11 +1416,15 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _jump: {fileID: 4989187608504605856}
-  _maxRaycasts: 3
+  _maxRaycasts: 4
   _edgeDistance: 0.2
-  _teleportaionDistanceCloseToEdge: 0.5
+  _teleportaionDistanceCloseToEdge: 0.8
   _defaultDrag: 100
   _duringJumpDrag: 3
+  _firstRayDistance: 1
+  _secondRayDistance: 1.5
+  _thirdRayDistance: 1.5
+  _fourthRayDistance: 1
 --- !u!114 &8416570971092969837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1746,7 +1750,7 @@ Transform:
   m_GameObject: {fileID: 5984572533208020700}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.11, z: 0}
+  m_LocalPosition: {x: 0, y: -0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

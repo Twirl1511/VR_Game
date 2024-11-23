@@ -15,11 +15,12 @@ public class GravityController : MonoBehaviour
     [SerializeField] private float _distanceToCheckNewSurface = 1.5f;
     [SerializeField] private float _radiusSurfaceDetector = 1f;
     [SerializeField] private Transform _surfaceDetector;
-    [SerializeField] private Transform _center;                  
+    [SerializeField] private Transform _center;
     [SerializeField] private float _gravityChangeDelay = 0.2f;
 
     [Header("Check ground and fall distance")]
     [Space]
+    [Tooltip("Collider height / 2")]
     [SerializeField] private float _checkGroundDistance = 1f;
     [SerializeField] private float _checkFallDistance = 1.8f;
 
@@ -94,7 +95,7 @@ public class GravityController : MonoBehaviour
     private void FixedUpdate()
     {
         TransitioningGravityDirectionWhileJumping();
-        UpdateGravityVelocity();
+        UpdateGravityVelocityAndIsGround();
 
         if (!CanChangeGravity)
         {
@@ -223,7 +224,7 @@ public class GravityController : MonoBehaviour
                 case 0: TeleportOnWall(hitInfo); return;                    // forward
                 case 1: return;                                             // forward -> down
                 case 2: TryTeleportOnEdge(hitInfo); return;                 // forward -> down -> back
-                case 3: TryTeleportOnOtherSideOfTheWall(hitInfo); return;   // forward -> down -> back -> up
+                //case 3: TryTeleportOnOtherSideOfTheWall(hitInfo); return;   // forward -> down -> back -> up
                 default: return;
             }
         }
@@ -249,7 +250,6 @@ public class GravityController : MonoBehaviour
         }
         void TryTeleportOnEdge(RaycastHit hitInfo)
         {
-            print(1);
             teleportPosition = previousOrigin + (previousDirection * _teleportaionDistanceCloseToEdge);
             Debug.DrawLine(previousOrigin, teleportPosition, Color.blue, 1f);
 
@@ -261,7 +261,6 @@ public class GravityController : MonoBehaviour
         }
         void TryTeleportOnOtherSideOfTheWall(RaycastHit hitInfo)
         {
-            print(2);
             teleportPosition = previousOrigin + (previousDirection * (_firstRayDistance + _edgeDistance + 0.1f));
             Debug.DrawLine(previousOrigin, teleportPosition, Color.blue, 1f);
 
@@ -314,7 +313,7 @@ public class GravityController : MonoBehaviour
         _surfaceDetector.position = targetPosition;
     }
 
-    public void UpdateGravityVelocity()
+    private void UpdateGravityVelocityAndIsGround()
     {
         Physics.Raycast(transform.position, -transform.up, out RaycastHit hitInfo, float.MaxValue);
         // TODO: rewrite to squaremagnitude
