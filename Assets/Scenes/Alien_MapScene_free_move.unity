@@ -4266,6 +4266,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4465792264248708483, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
   m_PrefabInstance: {fileID: 492470663}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &492470674 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4967434511042574812, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+  m_PrefabInstance: {fileID: 492470663}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64e5c0e2557c624469b097759fc12ae3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &509446022
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12543,6 +12554,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3164819030442443011, guid: 366035a9c3474f34aa7b9a5a4b5e882b, type: 3}
   m_PrefabInstance: {fileID: 1346310762}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1354050641 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8375806067179582855, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+  m_PrefabInstance: {fileID: 492470663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1360306551
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14383,6 +14399,11 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.1153732
   m_Center: {x: 0, y: 0.09230521, z: 0}
+--- !u!4 &1602736459 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2266108311671913853, guid: e18726daf5561f04cbcd1d9c4902be19, type: 3}
+  m_PrefabInstance: {fileID: 492470663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1603282439
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15050,6 +15071,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraTransform: {fileID: 2098379616}
+  _gravityController: {fileID: 492470674}
   _segments:
   - {fileID: 300061246819784758}
   - {fileID: 300061246819784757}
@@ -15062,11 +15084,10 @@ MonoBehaviour:
   - {fileID: 680867632}
   - {fileID: 680867631}
   - {fileID: 680867630}
-  _segmentSpacing: 0.5
-  _moveSpeed: 5
-  _groundLayer:
-    serializedVersion: 2
-    m_Bits: 256
+  _initialSegmentSpacing: 0.5
+  _moveSpeed: 100
+  _lerpSpeed: 10
+  _timeAfterStopMovingToHead: 1.5
 --- !u!4 &1696128021
 Transform:
   m_ObjectHideFlags: 0
@@ -19376,10 +19397,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4376075744212286299, guid: ad1ae2a48a70e964dafd967952e713b2, type: 3}
+      propertyPath: Target
+      value: 
+      objectReference: {fileID: 1354050641}
     - target: {fileID: 7607651985318131976, guid: ad1ae2a48a70e964dafd967952e713b2, type: 3}
       propertyPath: m_Name
       value: Snake
       objectReference: {fileID: 0}
+    - target: {fileID: 8186840426059670194, guid: ad1ae2a48a70e964dafd967952e713b2, type: 3}
+      propertyPath: Target
+      value: 
+      objectReference: {fileID: 1602736459}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

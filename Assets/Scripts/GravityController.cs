@@ -64,6 +64,7 @@ public class GravityController : MonoBehaviour
 
 
     public event Action OnChangeSurface;
+    public event Action OnGrounded;
 
 
 
@@ -321,6 +322,11 @@ public class GravityController : MonoBehaviour
 
         if (IsOnSurface())
         {
+            if (IsGround == false)
+            {
+                OnGrounded?.Invoke();
+            }
+
             IsGround = true;
             GravityVelocity = Vector3.zero;
         }
