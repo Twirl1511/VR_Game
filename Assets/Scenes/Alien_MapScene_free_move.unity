@@ -19405,6 +19405,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Snake
       objectReference: {fileID: 0}
+    - target: {fileID: 7858888394737222682, guid: ad1ae2a48a70e964dafd967952e713b2, type: 3}
+      propertyPath: _cameraTransform
+      value: 
+      objectReference: {fileID: 2098379616}
+    - target: {fileID: 7858888394737222682, guid: ad1ae2a48a70e964dafd967952e713b2, type: 3}
+      propertyPath: _gravityController
+      value: 
+      objectReference: {fileID: 492470674}
     - target: {fileID: 8186840426059670194, guid: ad1ae2a48a70e964dafd967952e713b2, type: 3}
       propertyPath: Target
       value: 
