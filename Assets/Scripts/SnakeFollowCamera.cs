@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SnakeFollowCamera : MonoBehaviour
 {
-    [SerializeField] private Transform _cameraTransform;
+    [SerializeField] private Transform _headTransform;
     [SerializeField] private GravityController _gravityController;
     [SerializeField] private List<Transform> _segments;
     [SerializeField] private float _initialSegmentSpacing = 0.5f;
@@ -16,12 +16,12 @@ public class SnakeFollowCamera : MonoBehaviour
 
     private void Start()
     {
-        _gravityController.OnGrounded += StartMoveToHead;
+        _gravityController.OnGroundedAfterFall += StartMoveToHead;
     }
 
     private void OnDisable()
     {
-        _gravityController.OnGrounded -= StartMoveToHead;
+        _gravityController.OnGroundedAfterFall -= StartMoveToHead;
     }
 
     private void Update()
@@ -43,8 +43,9 @@ public class SnakeFollowCamera : MonoBehaviour
 
     private void MoveSegments()
     {
-        Vector3 previousPosition = _cameraTransform.position;
+        Vector3 previousPosition = _headTransform.position;
         float currentSpacing = _initialSegmentSpacing;
+        Quaternion previousQuaternion = _headTransform.rotation;
 
         for (int i = 0; i < _segments.Count; i++)
         {
@@ -56,17 +57,18 @@ public class SnakeFollowCamera : MonoBehaviour
                 Vector3 direction = (previousPosition - segment.position).normalized;
                 Vector3 targetPosition = segment.position + direction * (distance - currentSpacing);
                 segment.position = Vector3.Lerp(segment.position, targetPosition, _moveSpeed * Time.deltaTime);
-                segment.rotation = Quaternion.LookRotation(direction);
+                segment.rotation = Quaternion.Lerp(segment.rotation, previousQuaternion, _lerpSpeed * Time.deltaTime);
             }
 
             previousPosition = segment.position;
+            previousQuaternion = segment.rotation;
             currentSpacing *= 0.9f;
         }
     }
 
     private void MoveSegmentsToHead()
     {
-        Vector3 headPosition = _cameraTransform.position;
+        Vector3 headPosition = _headTransform.position;
         bool allSegmentsAtHead = true;
 
         for (int i = 0; i < _segments.Count; i++)

@@ -64,7 +64,7 @@ public class GravityController : MonoBehaviour
 
 
     public event Action OnChangeSurface;
-    public event Action OnGrounded;
+    public event Action OnGroundedAfterFall;
 
 
 
@@ -285,6 +285,7 @@ public class GravityController : MonoBehaviour
         if (Physics.Raycast(transform.position, direction, out RaycastHit hitInfo, _distanceToCheckNewSurface, _groundLayer))
         {
             SetNewSurface(hitInfo);
+            OnGroundedAfterFall?.Invoke();
         }
     }
 
@@ -322,11 +323,6 @@ public class GravityController : MonoBehaviour
 
         if (IsOnSurface())
         {
-            if (IsGround == false)
-            {
-                OnGrounded?.Invoke();
-            }
-
             IsGround = true;
             GravityVelocity = Vector3.zero;
         }
