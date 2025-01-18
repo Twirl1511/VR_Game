@@ -4,8 +4,11 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - Projectile
+  - Target
   - Anchor
-  - Saber
+  - PlayerHand
+  - Destroyer
   layers:
   - Default
   - TransparentFX
@@ -13,14 +16,14 @@ TagManager:
   - 
   - Water
   - UI
-  - Teleport
   - Player
-  - Terrain
-  - Ball
-  - Saber
-  - BatFollower
-  - Alien
-  - Floor
+  - Mirror
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

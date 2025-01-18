@@ -7,6 +7,8 @@ public class VRMap
     public Transform ikTarget;
     public Vector3 trackingPositionOffset;
     public Vector3 trackingRotationOffset;
+
+
     public void Map()
     {
         ikTarget.position = vrTarget.TransformPoint(trackingPositionOffset);
@@ -25,7 +27,7 @@ public class IKTargetFollowVRRig : MonoBehaviour
     public Vector3 headBodyPositionOffset;
     public float headBodyYawOffset;
 
-    // Update is called once per frame
+    
     void LateUpdate()
     {
         transform.position = head.ikTarget.position + headBodyPositionOffset;

@@ -10,7 +10,6 @@ public class GravityController : MonoBehaviour
     [SerializeField] private InputActionReference _wallRunButton;
     [SerializeField] private CustomGravityCharacterController _customGravityCharacterController;
     [SerializeField] private CustomGravityActionBasedModeProvider gravityProvider;
-    [SerializeField] private PhysicsHandsController _physicsHandsController;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _distanceToCheckNewSurface = 1.5f;
     [SerializeField] private float _radiusSurfaceDetector = 1f;
@@ -75,9 +74,6 @@ public class GravityController : MonoBehaviour
         _defaultGravityDirection = Vector3.down * GRAVITY_FORCE;
         ResetGravityToDefault();
 
-        if(_physicsHandsController != null)
-            _physicsHandsController.OnJump += StartJumping;
-
         _wallRunButton.action.started += ActivateWallRun;
         _wallRunButton.action.canceled += DeactivateWallRun;
         _jump.OnJump += StartJumping;
@@ -85,9 +81,6 @@ public class GravityController : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_physicsHandsController != null)
-            _physicsHandsController.OnJump -= StartJumping;
-
         _wallRunButton.action.started -= ActivateWallRun;
         _wallRunButton.action.canceled -= DeactivateWallRun;
         _jump.OnJump -= StartJumping;
